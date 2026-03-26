@@ -1,0 +1,154 @@
+<style>
+  body { margin: 0; padding: 0; }
+  .form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-bottom: 2rem;
+  }
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+  }
+  .optional {
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    font-weight: 400;
+    margin-left: 0.5rem;
+  }
+  input, select {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 15px;
+    border: 1px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-background-primary);
+    color: var(--color-text-primary);
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--color-border-primary);
+  }
+  button {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 15px;
+    font-weight: 500;
+    color: white;
+    background-color: #1e40af;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  button:hover {
+    background-color: #1e3a8a;
+  }
+  button:active {
+    background-color: #1a2e6f;
+  }
+  .success-message {
+    display: none;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: var(--color-background-info);
+    color: var(--color-text-info);
+    border-radius: var(--border-radius-md);
+    font-size: 14px;
+  }
+  .success-message.show {
+    display: block;
+  }
+</style>
+
+<div class="form-container">
+  <h1>Real Estate Newsletter</h1>
+  <p class="subtitle">Get curated insights on property markets</p>
+  
+  <div class="success-message" id="successMessage">
+    Thank you! You've been added to our newsletter.
+  </div>
+  
+  <form id="newsletterForm">
+    <div class="form-group">
+      <label for="email">
+        Email
+        <span class="optional">required</span>
+      </label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="you@example.com"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="assetClass">
+        Asset class
+        <span class="optional">optional</span>
+      </label>
+      <select id="assetClass" name="assetClass">
+        <option value="">Select an asset class</option>
+        <option value="residential">Residential</option>
+        <option value="commercial">Commercial</option>
+        <option value="mixed-use">Mixed Use</option>
+        <option value="land">Land</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="market">
+        Market
+        <span class="optional">optional</span>
+      </label>
+      <select id="market" name="market">
+        <option value="">Select a market</option>
+        <option value="africa">Africa</option>
+        <option value="united-states">United States</option>
+        <option value="caribbean">Caribbean</option>
+        <option value="south-america">South America</option>
+        <option value="middle-east">Middle East</option>
+      </select>
+    </div>
+
+    <button type="submit">Subscribe</button>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('newsletterForm');
+  const successMessage = document.getElementById('successMessage');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const assetClass = document.getElementById('assetClass').value;
+    const market = document.getElementById('market').value;
+    
+    console.log('Form submitted:', { email, assetClass, market });
+    
+    form.style.display = 'none';
+    successMessage.classList.add('show');
+  });
+</script>
