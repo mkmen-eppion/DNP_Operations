@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,9 +60,7 @@ function FieldLabel({
     <Label htmlFor={htmlFor} style={{ color: "#f5f0e8" }}>
       {children}{" "}
       {required && (
-        <span className="text-xs font-normal" style={{ color: "#9aa3b8" }}>
-          required
-        </span>
+        <span className="text-red-400 font-bold" aria-hidden="true">*</span>
       )}
     </Label>
   );
@@ -110,9 +109,13 @@ type FormData = {
   firstName: string;
   lastName: string;
   phone: string;
+  phone2: string;
   email: string;
+  age: string;
   country: string;
-  citizenship: string;
+  citizenshipType: string;
+  citizenship1: string;
+  citizenship2: string;
   occupation: string;
   yearsEmployed: string;
   annualIncome: string;
@@ -131,6 +134,7 @@ type FormData = {
   ghanaLocation: string;
   timeline: string;
   additionalInfo: string;
+  subscribeNewsletter: boolean;
   consentWaitlist: boolean;
   consentContact: boolean;
 };
@@ -139,9 +143,13 @@ const initial: FormData = {
   firstName: "",
   lastName: "",
   phone: "",
+  phone2: "",
   email: "",
+  age: "",
   country: "",
-  citizenship: "",
+  citizenshipType: "",
+  citizenship1: "",
+  citizenship2: "",
   occupation: "",
   yearsEmployed: "",
   annualIncome: "",
@@ -160,9 +168,26 @@ const initial: FormData = {
   ghanaLocation: "",
   timeline: "",
   additionalInfo: "",
+  subscribeNewsletter: false,
   consentWaitlist: false,
   consentContact: false,
 };
+
+const ghanaLocations = [
+  "Accra",
+  "Kumasi",
+  "East Legon",
+  "Cantonments",
+  "Airport Residential",
+  "Tema",
+  "Takoradi",
+  "Tamale",
+  "Cape Coast",
+  "Koforidua",
+  "Sunyani",
+  "Ho",
+  "Other",
+];
 
 export default function MortgagePage() {
   const [form, setForm] = useState<FormData>(initial);
@@ -175,6 +200,26 @@ export default function MortgagePage() {
     form.firstName.trim() &&
     form.lastName.trim() &&
     form.email.trim() &&
+    form.age.trim() &&
+    form.phone.trim() &&
+    form.country.trim() &&
+    form.citizenshipType.trim() &&
+    form.citizenship1.trim() &&
+    form.occupation.trim() &&
+    form.yearsEmployed.trim() &&
+    form.annualIncome.trim() &&
+    form.totalAssets.trim() &&
+    form.creditScore.trim() &&
+    form.monthlyDebt.trim() &&
+    form.ownsHome.trim() &&
+    form.boughtGhana.trim() &&
+    form.buyingStructure.trim() &&
+    form.purchasePrice.trim() &&
+    form.downPayment.trim() &&
+    form.loanTerm.trim() &&
+    form.propertyType.trim() &&
+    form.ghanaLocation.trim() &&
+    form.timeline.trim() &&
     form.consentWaitlist &&
     form.consentContact &&
     status !== "loading";
@@ -196,17 +241,14 @@ export default function MortgagePage() {
       <div className="w-full max-w-xl space-y-6">
         {/* Logo */}
         <div className="flex justify-center">
-          <div className="text-center">
-            <p
-              className="text-xs font-semibold tracking-[0.25em] uppercase"
-              style={{ color: "#c9a84c" }}
-            >
-              Diaspora Property
-            </p>
-            <p className="text-xs tracking-[0.4em] uppercase mt-0.5" style={{ color: "#9aa3b8" }}>
-              Network
-            </p>
-          </div>
+          <Image
+            src="/logo.png"
+            alt="Diaspora Property Network"
+            width={160}
+            height={60}
+            className="object-contain"
+            priority
+          />
         </div>
 
         <Card
@@ -226,6 +268,9 @@ export default function MortgagePage() {
               Be among the first to access a new international mortgage solution designed to help
               the African Diaspora finance property in Ghana.
             </CardDescription>
+            <p className="text-xs mt-2" style={{ color: "#9aa3b8" }}>
+              Fields marked <span className="text-red-400 font-bold">*</span> are required.
+            </p>
           </CardHeader>
 
           <CardContent className="pb-8">
@@ -290,13 +335,15 @@ export default function MortgagePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
+                  <FieldLabel htmlFor="age" required>Age</FieldLabel>
                   <Input
-                    id="phone"
-                    type="tel"
-                    value={form.phone}
-                    onChange={(e) => set("phone")(e.target.value)}
-                    placeholder="+1 (555) 000-0000"
+                    id="age"
+                    type="number"
+                    min={18}
+                    max={100}
+                    value={form.age}
+                    onChange={(e) => set("age")(e.target.value)}
+                    placeholder="35"
                     disabled={status === "loading"}
                     style={inputStyle}
                     className={inputClass}
@@ -305,24 +352,26 @@ export default function MortgagePage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="country">Country of Residence</FieldLabel>
+                    <FieldLabel htmlFor="phone" required>Primary Phone</FieldLabel>
                     <Input
-                      id="country"
-                      value={form.country}
-                      onChange={(e) => set("country")(e.target.value)}
-                      placeholder="United States"
+                      id="phone"
+                      type="tel"
+                      value={form.phone}
+                      onChange={(e) => set("phone")(e.target.value)}
+                      placeholder="+1 (555) 000-0000"
                       disabled={status === "loading"}
                       style={inputStyle}
                       className={inputClass}
                     />
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="citizenship">Citizenship</FieldLabel>
+                    <FieldLabel htmlFor="phone2">Secondary Phone</FieldLabel>
                     <Input
-                      id="citizenship"
-                      value={form.citizenship}
-                      onChange={(e) => set("citizenship")(e.target.value)}
-                      placeholder="Ghanaian"
+                      id="phone2"
+                      type="tel"
+                      value={form.phone2}
+                      onChange={(e) => set("phone2")(e.target.value)}
+                      placeholder="+44 7700 000000"
                       disabled={status === "loading"}
                       style={inputStyle}
                       className={inputClass}
@@ -330,12 +379,84 @@ export default function MortgagePage() {
                   </div>
                 </div>
 
+                <div className="space-y-2">
+                  <FieldLabel htmlFor="country" required>Country of Residence</FieldLabel>
+                  <Input
+                    id="country"
+                    value={form.country}
+                    onChange={(e) => set("country")(e.target.value)}
+                    placeholder="United States"
+                    disabled={status === "loading"}
+                    style={inputStyle}
+                    className={inputClass}
+                  />
+                </div>
+
+                {/* Citizenship */}
+                <div className="space-y-2">
+                  <FieldLabel htmlFor="citizenshipType" required>Citizenship</FieldLabel>
+                  <StyledSelect
+                    id="citizenshipType"
+                    value={form.citizenshipType}
+                    onChange={set("citizenshipType") as (v: string) => void}
+                    placeholder="Single or dual citizenship?"
+                    disabled={status === "loading"}
+                  >
+                    <SI value="single">Single Citizenship</SI>
+                    <SI value="dual">Dual Citizenship</SI>
+                  </StyledSelect>
+                </div>
+
+                {form.citizenshipType === "single" && (
+                  <div className="space-y-2">
+                    <FieldLabel htmlFor="citizenship1" required>Country of Citizenship</FieldLabel>
+                    <Input
+                      id="citizenship1"
+                      value={form.citizenship1}
+                      onChange={(e) => set("citizenship1")(e.target.value)}
+                      placeholder="e.g. Ghana"
+                      disabled={status === "loading"}
+                      style={inputStyle}
+                      className={inputClass}
+                    />
+                  </div>
+                )}
+
+                {form.citizenshipType === "dual" && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <FieldLabel htmlFor="citizenship1" required>First Citizenship</FieldLabel>
+                      <Input
+                        id="citizenship1"
+                        value={form.citizenship1}
+                        onChange={(e) => set("citizenship1")(e.target.value)}
+                        placeholder="e.g. Ghana"
+                        disabled={status === "loading"}
+                        style={inputStyle}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <FieldLabel htmlFor="citizenship2" required>Second Citizenship</FieldLabel>
+                      <Input
+                        id="citizenship2"
+                        value={form.citizenship2}
+                        onChange={(e) => set("citizenship2")(e.target.value)}
+                        placeholder="e.g. United States"
+                        disabled={status === "loading"}
+                        style={inputStyle}
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* ── Employment & Income ── */}
                 <SectionHeading>Employment &amp; Income</SectionHeading>
                 <Divider />
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="occupation">Occupation</FieldLabel>
+                  <FieldLabel htmlFor="occupation" required>Occupation</FieldLabel>
                   <Input
                     id="occupation"
                     value={form.occupation}
@@ -349,7 +470,7 @@ export default function MortgagePage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="yearsEmployed">Years Employed</FieldLabel>
+                    <FieldLabel htmlFor="yearsEmployed" required>Years Employed</FieldLabel>
                     <Input
                       id="yearsEmployed"
                       type="number"
@@ -363,7 +484,7 @@ export default function MortgagePage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="annualIncome">Annual Income (USD)</FieldLabel>
+                    <FieldLabel htmlFor="annualIncome" required>Annual Income (USD)</FieldLabel>
                     <Input
                       id="annualIncome"
                       type="number"
@@ -383,7 +504,7 @@ export default function MortgagePage() {
                 <Divider />
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="totalAssets">Total Assets Available (USD)</FieldLabel>
+                  <FieldLabel htmlFor="totalAssets" required>Total Assets Available (USD)</FieldLabel>
                   <Input
                     id="totalAssets"
                     type="number"
@@ -398,7 +519,7 @@ export default function MortgagePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="creditScore">Estimated Credit Score Range</FieldLabel>
+                  <FieldLabel htmlFor="creditScore" required>Estimated Credit Score Range</FieldLabel>
                   <StyledSelect
                     id="creditScore"
                     value={form.creditScore}
@@ -414,7 +535,7 @@ export default function MortgagePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="monthlyDebt">Estimated Monthly Debt Obligations (USD)</FieldLabel>
+                  <FieldLabel htmlFor="monthlyDebt" required>Estimated Monthly Debt Obligations (USD)</FieldLabel>
                   <Input
                     id="monthlyDebt"
                     type="number"
@@ -433,7 +554,7 @@ export default function MortgagePage() {
                 <Divider />
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="ownsHome">Do you currently own a home in the U.S. or abroad?</FieldLabel>
+                  <FieldLabel htmlFor="ownsHome" required>Do you currently own a home in the U.S. or abroad?</FieldLabel>
                   <StyledSelect
                     id="ownsHome"
                     value={form.ownsHome}
@@ -462,7 +583,7 @@ export default function MortgagePage() {
                 )}
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="boughtGhana">Have you purchased property in Ghana before?</FieldLabel>
+                  <FieldLabel htmlFor="boughtGhana" required>Have you purchased property in Ghana before?</FieldLabel>
                   <StyledSelect
                     id="boughtGhana"
                     value={form.boughtGhana}
@@ -480,7 +601,7 @@ export default function MortgagePage() {
                 <Divider />
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="buyingStructure">Are you buying alone or with a co-applicant?</FieldLabel>
+                  <FieldLabel htmlFor="buyingStructure" required>Are you buying alone or with a co-applicant?</FieldLabel>
                   <StyledSelect
                     id="buyingStructure"
                     value={form.buyingStructure}
@@ -516,7 +637,7 @@ export default function MortgagePage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="purchasePrice">Estimated Purchase Price (USD)</FieldLabel>
+                    <FieldLabel htmlFor="purchasePrice" required>Estimated Purchase Price (USD)</FieldLabel>
                     <Input
                       id="purchasePrice"
                       type="number"
@@ -530,7 +651,7 @@ export default function MortgagePage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="downPayment">Down Payment Amount (USD)</FieldLabel>
+                    <FieldLabel htmlFor="downPayment" required>Down Payment Amount (USD)</FieldLabel>
                     <Input
                       id="downPayment"
                       type="number"
@@ -546,7 +667,7 @@ export default function MortgagePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="loanTerm">Preferred Loan Term</FieldLabel>
+                  <FieldLabel htmlFor="loanTerm" required>Preferred Loan Term</FieldLabel>
                   <StyledSelect
                     id="loanTerm"
                     value={form.loanTerm}
@@ -554,6 +675,7 @@ export default function MortgagePage() {
                     placeholder="Select term"
                     disabled={status === "loading"}
                   >
+                    <SI value="under-15">Under 15 Years</SI>
                     <SI value="15">15 Years</SI>
                     <SI value="30">30 Years</SI>
                   </StyledSelect>
@@ -564,7 +686,7 @@ export default function MortgagePage() {
                 <Divider />
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="propertyType">What type of property are you looking to finance?</FieldLabel>
+                  <FieldLabel htmlFor="propertyType" required>What type of property are you looking to finance?</FieldLabel>
                   <StyledSelect
                     id="propertyType"
                     value={form.propertyType}
@@ -581,20 +703,22 @@ export default function MortgagePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="ghanaLocation">Preferred Location in Ghana</FieldLabel>
-                  <Input
+                  <FieldLabel htmlFor="ghanaLocation" required>Preferred Location in Ghana</FieldLabel>
+                  <StyledSelect
                     id="ghanaLocation"
                     value={form.ghanaLocation}
-                    onChange={(e) => set("ghanaLocation")(e.target.value)}
-                    placeholder="Accra, Kumasi, East Legon…"
+                    onChange={set("ghanaLocation") as (v: string) => void}
+                    placeholder="Select area"
                     disabled={status === "loading"}
-                    style={inputStyle}
-                    className={inputClass}
-                  />
+                  >
+                    {ghanaLocations.map((loc) => (
+                      <SI key={loc} value={loc.toLowerCase().replace(/\s+/g, "-")}>{loc}</SI>
+                    ))}
+                  </StyledSelect>
                 </div>
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="timeline">Estimated Purchase Timeline</FieldLabel>
+                  <FieldLabel htmlFor="timeline" required>Estimated Purchase Timeline</FieldLabel>
                   <StyledSelect
                     id="timeline"
                     value={form.timeline}
@@ -628,8 +752,8 @@ export default function MortgagePage() {
                   />
                 </div>
 
-                {/* ── Consent ── */}
-                <SectionHeading>Consent &amp; Acknowledgment</SectionHeading>
+                {/* ── Consent & Preferences ── */}
+                <SectionHeading>Consent &amp; Preferences</SectionHeading>
                 <Divider />
 
                 <div className="space-y-3 pt-1">
@@ -647,7 +771,7 @@ export default function MortgagePage() {
                       style={{ color: "#9aa3b8" }}
                     >
                       I understand this is a waiting list for a mortgage product currently in
-                      development.
+                      development. <span className="text-red-400 font-bold">*</span>
                     </Label>
                   </div>
 
@@ -665,7 +789,25 @@ export default function MortgagePage() {
                       style={{ color: "#9aa3b8" }}
                     >
                       I agree to be contacted by DPN-Global regarding updates and opportunities
-                      related to the mortgage program.
+                      related to the mortgage program. <span className="text-red-400 font-bold">*</span>
+                    </Label>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <Checkbox
+                      id="subscribeNewsletter"
+                      checked={form.subscribeNewsletter}
+                      onCheckedChange={(v) => set("subscribeNewsletter")(v)}
+                      disabled={status === "loading"}
+                      className="mt-0.5 border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
+                    />
+                    <Label
+                      htmlFor="subscribeNewsletter"
+                      className="text-sm leading-snug cursor-pointer"
+                      style={{ color: "#9aa3b8" }}
+                    >
+                      Subscribe me to the DPN-Global mailing list for property news, market updates,
+                      and exclusive opportunities.
                     </Label>
                   </div>
                 </div>
