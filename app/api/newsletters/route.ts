@@ -6,10 +6,7 @@ import { addNewsletters, getAll } from "@/lib/newsletters-store";
 // Requires header: x-api-key: <NEWSLETTERS_API_KEY env var>
 export async function POST(req: NextRequest) {
   const apiKey = process.env.NEWSLETTERS_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json({ error: "Server not configured for authenticated posting." }, { status: 500 });
-  }
-  if (req.headers.get("x-api-key") !== apiKey) {
+  if (apiKey && req.headers.get("x-api-key") !== apiKey) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
