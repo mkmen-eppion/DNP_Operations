@@ -3,7 +3,16 @@ import { addNewsletters, getAll } from "@/lib/newsletters-store";
 
 // POST /api/newsletters
 // Body: [{ wp_title: string, wp_body: string }, ...]
+// Requires header: x-api-key: <NEWSLETTERS_API_KEY env var>
 export async function POST(req: NextRequest) {
+  const apiKey = process.env.NEWSLETTERS_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ error: "Server not configured for authenticated posting." }, { status: 500 });
+  }
+  if (req.headers.get("x-api-key") !== apiKey) {
+    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  }
+
   let body: unknown;
   try {
     body = await req.json();
