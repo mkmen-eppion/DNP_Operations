@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addNewsletters, getAll } from "@/lib/newsletters-store";
 
+export async function GET() {
+  const newsletters = (await getAll()).map(({ id, wp_title, received_at }) => ({
+    id,
+    wp_title,
+    received_at,
+  }));
+  return NextResponse.json(newsletters);
+}
+
 export async function POST(req: NextRequest) {
   const apiKey = process.env.NEWSLETTERS_API_KEY;
   if (apiKey && req.headers.get("x-api-key") !== apiKey) {
@@ -21,14 +30,9 @@ export async function POST(req: NextRequest) {
     try {
       body = await req.json();
     } catch {
-      return NextResponse.json(
-        { error: "Invalid JSON body." },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
     }
-    const item = Array.isArray(body)
-      ? body[0]
-      : (body as Record<string, string>);
+    const item = Array.isArray(body) ? body[0] : (body as Record<string, string>);
     wp_title = item.wp_title;
     wp_body = item.wp_body;
   }
@@ -36,26 +40,13 @@ export async function POST(req: NextRequest) {
   if (!wp_title || !wp_body) {
     return NextResponse.json(
       { error: "wp_title and wp_body are required." },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
-  const added = addNewsletters([{ wp_title, wp_body }]);
+  const added = await addNewsletters([{ wp_title, wp_body }]);
   return NextResponse.json(
-    {
-      message: "Newsletters received.",
-      count: added.length,
-      newsletters: added,
-    },
-    { status: 201 },
+    { message: "Newsletters received.", count: added.length, newsletters: added },
+    { status: 201 }
   );
-}
-
-export async function GET() {
-  const newsletters = getAll().map(({ id, wp_title, received_at }) => ({
-    id,
-    wp_title,
-    received_at,
-  }));
-  return NextResponse.json(newsletters);
 }

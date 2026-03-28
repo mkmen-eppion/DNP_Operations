@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const newsletter = getById(id);
+  const newsletter = await getById(id);
   if (!newsletter) {
     return NextResponse.json({ error: "Newsletter not found." }, { status: 404 });
   }
