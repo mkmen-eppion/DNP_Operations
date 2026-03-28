@@ -244,7 +244,7 @@ export default function MortgagePage() {
           <Image
             src="/logo.png"
             alt="Diaspora Property Network"
-            width={160}
+            width={240}
             height={0}
             style={{ height: "auto" }}
             className="object-contain"
