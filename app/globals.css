@@ -93,3 +93,53 @@
     @apply font-sans;
   }
 }
+
+/* Newsletter article body — scopes styles to rendered HTML from wp_body */
+.newsletter-body {
+  color: #1a1a2e;
+  font-size: 15px;
+  line-height: 1.8;
+}
+.newsletter-body h2 {
+  color: #1a1a2e;
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 32px;
+  margin-bottom: 8px;
+}
+.newsletter-body h3 {
+  color: #2c3e6b;
+  font-family: Georgia, serif;
+  font-size: 17px;
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 6px;
+}
+.newsletter-body p {
+  margin: 12px 0;
+}
+.newsletter-body ul {
+  padding-left: 20px;
+  margin: 12px 0;
+}
+.newsletter-body li {
+  margin-bottom: 6px;
+  line-height: 1.7;
+}
+.newsletter-body a {
+  color: #2c3e6b;
+  text-decoration: underline;
+}
+.newsletter-body a:hover {
+  color: #c9a84c;
+}
+.newsletter-body hr {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 24px 0;
+}
+.newsletter-body strong {
+  color: #1a1a2e;
+  font-weight: 600;
+}
