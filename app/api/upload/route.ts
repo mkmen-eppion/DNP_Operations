@@ -75,18 +75,14 @@ export async function POST(req: NextRequest) {
     const storage = getStorage(getApp());
     const fileRef = storage.bucket(bucket).file(filename);
 
-    // Save without public:true — firebasestorage.app buckets don't support predefinedAcl
     await fileRef.save(buffer, {
       metadata: { contentType: file.type },
     });
 
-    // Generate a signed URL (valid 7 days)
-    const [signedUrl] = await fileRef.getSignedUrl({
-      action: "read",
-      expires: Date.now() + SIGNED_URL_EXPIRY_MS,
-    });
+    // Permanent public URL — requires Storage rules: allow read: if true for /ads/**
+    const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(filename)}?alt=media`;
 
-    return NextResponse.json({ url: signedUrl }, { status: 201 });
+    return NextResponse.json({ url: publicUrl }, { status: 201 });
   } catch (err) {
     console.error("[upload] error:", err);
     return NextResponse.json(
