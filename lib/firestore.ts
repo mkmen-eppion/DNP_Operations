@@ -9,10 +9,12 @@ function getApp(): App {
   const projectId = process.env.FIREBASE_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
   const rawKey = process.env.FIREBASE_PRIVATE_KEY ?? "";
-  // Handle both literal \n strings and already-decoded newlines
-  const privateKey = rawKey.includes("\\n")
-    ? rawKey.replace(/\\n/g, "\n")
-    : rawKey;
+  // Normalize the key — handle literal \n, double-escaped \\n, and real newlines
+  const privateKey = rawKey
+    .replace(/\\\\n/g, "\n")
+    .replace(/\\n/g, "\n")
+    .replace(/\r\n/g, "\n")
+    .trim();
 
   if (!projectId || !clientEmail || !privateKey) {
     throw new Error(
