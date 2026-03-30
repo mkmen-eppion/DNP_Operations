@@ -7,8 +7,13 @@ function requireApiKey(req: NextRequest): boolean {
 }
 
 export async function GET() {
-  const config = await getAdConfig();
-  return NextResponse.json(config);
+  try {
+    const config = await getAdConfig();
+    return NextResponse.json(config);
+  } catch (err) {
+    console.error("[settings] GET error:", err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {

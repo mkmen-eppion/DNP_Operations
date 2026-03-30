@@ -11,20 +11,24 @@ function requireApiKey(req: NextRequest): boolean {
 // GET /api/ads                        — all ads (admin)
 // GET /api/ads?slots=leaderboard,...  — active ads for given slots (newsletter page)
 export async function GET(req: NextRequest) {
-  const param = req.nextUrl.searchParams.get("slots");
+  try {
+    const param = req.nextUrl.searchParams.get("slots");
 
-  if (!param) {
-    // Admin — return all ads unfiltered
-    const ads = await getAllAds();
+    if (!param) {
+      const ads = await getAllAds();
+      return NextResponse.json(ads);
+    }
+
+    const requested = param
+      .split(",")
+      .filter((s) => VALID_SLOTS.includes(s as AdSlot)) as AdSlot[];
+
+    const ads = await getAds(requested);
     return NextResponse.json(ads);
+  } catch (err) {
+    console.error("[ads] GET error:", err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
   }
-
-  const requested = param
-    .split(",")
-    .filter((s) => VALID_SLOTS.includes(s as AdSlot)) as AdSlot[];
-
-  const ads = await getAds(requested);
-  return NextResponse.json(ads);
 }
 
 // POST /api/ads — create or update an ad
