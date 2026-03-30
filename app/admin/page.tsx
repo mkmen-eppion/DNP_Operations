@@ -277,7 +277,6 @@ function AdForm({
             value={form.image_url ?? ""}
             onChange={(e) => {
               set("image_url", e.target.value);
-              setUploadPreview(e.target.value);
             }}
             className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-1"
             style={inputStyle}
