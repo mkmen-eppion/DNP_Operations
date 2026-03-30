@@ -50,8 +50,10 @@ export async function POST(req: NextRequest) {
   if (!slot || !VALID_SLOTS.includes(slot as AdSlot)) {
     return NextResponse.json({ error: "Invalid or missing slot." }, { status: 400 });
   }
-  if (!label || !headline || !adBody || !cta_text || !cta_url) {
-    return NextResponse.json({ error: "label, headline, body, cta_text, and cta_url are required." }, { status: 400 });
+  // If an image is provided it covers all content, so text fields are optional
+  const hasImage = typeof image_url === "string" && image_url.trim().length > 0;
+  if (!hasImage && (!label || !headline || !adBody || !cta_text || !cta_url)) {
+    return NextResponse.json({ error: "Without an image, label, headline, body, cta_text, and cta_url are required." }, { status: 400 });
   }
 
   const ad = await upsertAd(
