@@ -191,10 +191,7 @@ export default function NewsletterArticlePage() {
   useEffect(() => {
     async function load() {
       // Fetch newsletter + global config in parallel
-      const [nlRes, cfgRes] = await Promise.all([
-        fetch(`/api/newsletters/${id}`),
-        fetch("/api/settings"),
-      ]);
+      const nlRes = await fetch(`/api/newsletters/${id}`);
 
       if (!nlRes.ok) {
         setError("Newsletter not found.");
@@ -203,22 +200,28 @@ export default function NewsletterArticlePage() {
       }
 
       const nl: Newsletter = await nlRes.json();
-      const cfg: AdConfig = cfgRes.ok ? await cfgRes.json() : null;
-
       setNewsletter(nl);
-      setConfig(cfg);
 
-      if (cfg) {
-        const enabledSlots: AdSlot[] = [];
-        if (cfg.ad_leaderboard) enabledSlots.push("leaderboard");
-        if (cfg.ad_medium_rect) enabledSlots.push("medium_rect");
-        if (cfg.ad_native)      enabledSlots.push("native");
-        if (cfg.ad_half_page)   enabledSlots.push("half_page");
+      // Settings and ads are optional — don't let failures block the article
+      try {
+        const cfgRes = await fetch("/api/settings");
+        const cfg: AdConfig = cfgRes.ok ? await cfgRes.json() : null;
+        setConfig(cfg);
 
-        if (enabledSlots.length > 0) {
-          const adsRes = await fetch(`/api/ads?slots=${enabledSlots.join(",")}`);
-          if (adsRes.ok) setAdsBySlot(await adsRes.json());
+        if (cfg) {
+          const enabledSlots: AdSlot[] = [];
+          if (cfg.ad_leaderboard) enabledSlots.push("leaderboard");
+          if (cfg.ad_medium_rect) enabledSlots.push("medium_rect");
+          if (cfg.ad_native)      enabledSlots.push("native");
+          if (cfg.ad_half_page)   enabledSlots.push("half_page");
+
+          if (enabledSlots.length > 0) {
+            const adsRes = await fetch(`/api/ads?slots=${enabledSlots.join(",")}`);
+            if (adsRes.ok) setAdsBySlot(await adsRes.json());
+          }
         }
+      } catch {
+        // ads/settings unavailable — article still renders
       }
 
       setLoading(false);
