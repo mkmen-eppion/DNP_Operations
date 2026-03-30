@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://drive.google.com https://*.googleusercontent.com https://storage.googleapis.com https://*.firebasestorage.app",
+              "img-src 'self' data: blob: https://drive.google.com https://*.googleusercontent.com https://storage.googleapis.com https://*.firebasestorage.app https://firebasestorage.googleapis.com",
               "font-src 'self'",
               "connect-src 'self'",
             ].join("; "),
