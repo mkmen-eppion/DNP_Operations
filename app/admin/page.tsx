@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Loader2, Plus, Trash2, Pencil, X, Check, AlertCircle, Upload, Link2 } from "lucide-react";
-import type { Ad, AdSlot } from "@/lib/ads-store";
+import type { Ad, AdSlot, AdDisplayMode } from "@/lib/ads-store";
 import type { AdConfig } from "@/lib/settings-store";
 
 // ---------------------------------------------------------------------------
@@ -20,8 +20,17 @@ const SLOT_LABELS: Record<AdSlot, string> = {
 
 const SLOT_ORDER: AdSlot[] = ["leaderboard", "medium_rect", "native", "half_page"];
 
+const DISPLAY_MODE_LABELS: Record<AdDisplayMode, string> = {
+  image_only: "Image only",
+  text_only:  "Text only",
+  text_image: "Text + Image",
+};
+
 const EMPTY_AD: Omit<Ad, "id"> = {
+  name: "",
+  tags: [],
   slot: "native",
+  display_mode: "text_only",
   label: "",
   headline: "",
   body: "",
@@ -124,22 +133,22 @@ function AdForm({
   const [form, setForm] = useState(initial);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
-  // "url" | "upload" — which image input mode is active
-  const [imageMode, setImageMode] = useState<"url" | "upload">(
-    initial.image_url ? "url" : "url"
-  );
+  const [imageMode, setImageMode] = useState<"url" | "upload">("url");
   const [uploading, setUploading] = useState(false);
+  const [tagInput, setTagInput] = useState((initial.tags ?? []).join(", "));
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Preview shows form.image_url once set (signed URL after upload, or typed URL)
   const preview = form.image_url ?? "";
+  const mode = form.display_mode as AdDisplayMode;
+  const needsImage = mode === "image_only" || mode === "text_image";
+  const needsText  = mode === "text_only"  || mode === "text_image";
 
   function set(field: string, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
   }
 
-  function switchMode(mode: "url" | "upload") {
-    setImageMode(mode);
+  function switchImageMode(m: "url" | "upload") {
+    setImageMode(m);
     set("image_url", "");
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
@@ -147,23 +156,13 @@ function AdForm({
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setUploading(true);
     setErr("");
     const fd = new FormData();
     fd.append("file", file);
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      headers: { "x-api-key": apiKey },
-      body: fd,
-    });
+    const res = await fetch("/api/upload", { method: "POST", headers: { "x-api-key": apiKey }, body: fd });
     setUploading(false);
-
-    if (!res.ok) {
-      const d = await res.json();
-      setErr(d.error ?? "Upload failed.");
-      return;
-    }
+    if (!res.ok) { const d = await res.json(); setErr(d.error ?? "Upload failed."); return; }
     const { url } = await res.json();
     set("image_url", url);
   }
@@ -171,24 +170,25 @@ function AdForm({
   async function save() {
     setSaving(true);
     setErr("");
+    const tags = tagInput.split(",").map((t) => t.trim()).filter(Boolean);
     const res = await fetch("/api/ads", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-api-key": apiKey },
-      body: JSON.stringify({ ...form, id: initial.id }),
+      body: JSON.stringify({ ...form, tags, id: initial.id }),
     });
     setSaving(false);
-    if (!res.ok) {
-      const d = await res.json();
-      setErr(d.error ?? "Save failed.");
-      return;
-    }
+    if (!res.ok) { const d = await res.json(); setErr(d.error ?? "Save failed."); return; }
     onSave(await res.json());
   }
 
-  const field = (label: string, key: string, opts?: { placeholder?: string; max?: number; type?: string }) => (
+  const inputStyle = { background: "rgba(255,255,255,0.05)", borderColor: "rgba(201,168,76,0.2)", color: "#f5f0e8" };
+
+  const field = (label: string, key: string, opts?: { placeholder?: string; max?: number; type?: string; required?: boolean }) => (
     <div className="space-y-1">
       <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#9aa3b8" }}>
-        {label}{opts?.max && <span className="ml-1 font-normal">({opts.max} chars)</span>}
+        {label}
+        {opts?.required && <span style={{ color: "#c9a84c" }}> *</span>}
+        {opts?.max && <span className="ml-1 font-normal">({opts.max} chars)</span>}
       </label>
       <input
         type={opts?.type ?? "text"}
@@ -197,172 +197,152 @@ function AdForm({
         value={(form as Record<string, string>)[key] ?? ""}
         onChange={(e) => set(key, e.target.value)}
         className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-1"
-        style={{
-          background: "rgba(255,255,255,0.05)",
-          borderColor: "rgba(201,168,76,0.2)",
-          color: "#f5f0e8",
-        }}
+        style={inputStyle}
       />
     </div>
   );
 
-  const inputStyle = {
-    background: "rgba(255,255,255,0.05)",
-    borderColor: "rgba(201,168,76,0.2)",
-    color: "#f5f0e8",
-  };
-
   return (
-    <div
-      className="rounded-xl border p-5 space-y-4"
-      style={{ borderColor: "rgba(201,168,76,0.35)", background: "#0d1b3e" }}
-    >
-      {/* Slot selector */}
-      <div className="space-y-1">
-        <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#9aa3b8" }}>Slot</label>
-        <select
-          value={form.slot}
-          onChange={(e) => set("slot", e.target.value)}
-          className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
-          style={{ background: "#0d1b3e", borderColor: "rgba(201,168,76,0.2)", color: "#f5f0e8" }}
-        >
-          {SLOT_ORDER.map((s) => (
-            <option key={s} value={s}>{SLOT_LABELS[s]}</option>
-          ))}
-        </select>
-      </div>
+    <div className="rounded-xl border p-5 space-y-4" style={{ borderColor: "rgba(201,168,76,0.35)", background: "#0d1b3e" }}>
 
+      {/* ── Identity ── */}
       <div className="grid grid-cols-2 gap-3">
-        {field("Label", "label", { placeholder: "Sponsored", max: 20 })}
-        {field("CTA Text", "cta_text", { placeholder: "Learn More", max: 15 })}
-      </div>
-      {field("Headline", "headline", { placeholder: "Invest in Ghana — From Anywhere", max: 45 })}
-      {field("Body", "body", { placeholder: "Short benefit-led description", max: 135 })}
-      {field("CTA URL", "cta_url", { placeholder: "https://", type: "url" })}
-
-      {/* Image — URL or Upload, mutually exclusive */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
+        {field("Ad Name", "name", { placeholder: "Caribbean Realty Q2", required: true })}
+        <div className="space-y-1">
           <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#9aa3b8" }}>
-            Image (optional)
-            <span className="ml-1 font-normal normal-case">— {SLOT_DIMENSIONS[form.slot as AdSlot]}, max 200 KB</span>
+            Tags <span className="font-normal normal-case">(comma separated)</span>
           </label>
-          {/* Mode toggle */}
-          <div
-            className="flex rounded-lg overflow-hidden border text-xs"
-            style={{ borderColor: "rgba(201,168,76,0.2)" }}
-          >
-            {(["url", "upload"] as const).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => switchMode(mode)}
-                className="flex items-center gap-1 px-3 py-1.5 transition-colors"
-                style={{
-                  background: imageMode === mode ? "rgba(201,168,76,0.15)" : "transparent",
-                  color: imageMode === mode ? "#c9a84c" : "#9aa3b8",
-                }}
-              >
-                {mode === "url" ? <Link2 className="size-3" /> : <Upload className="size-3" />}
-                {mode === "url" ? "URL" : "Upload"}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {imageMode === "url" && (
           <input
-            type="url"
-            placeholder="https://..."
-            value={form.image_url ?? ""}
-            onChange={(e) => {
-              set("image_url", e.target.value);
-            }}
+            type="text"
+            placeholder="real-estate, caribbean"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
             className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-1"
             style={inputStyle}
           />
-        )}
-
-        {imageMode === "upload" && (
-          <div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/gif,image/webp"
-              onChange={handleFileChange}
-              className="hidden"
-              id="ad-image-upload"
-            />
-            <label
-              htmlFor="ad-image-upload"
-              className="flex items-center justify-center gap-2 w-full rounded-lg border px-3 py-3 text-sm cursor-pointer transition-colors hover:bg-white/5"
-              style={{ borderColor: "rgba(201,168,76,0.2)", borderStyle: "dashed", color: "#9aa3b8" }}
-            >
-              {uploading ? (
-                <><Loader2 className="size-4 animate-spin" /> Uploading…</>
-              ) : (
-                <><Upload className="size-4" /> Click to choose a file</>
-              )}
-            </label>
-          </div>
-        )}
-
-        {/* Preview — shown for both modes once image_url is set */}
-        {preview && (
-          <div className="relative inline-block">
-            <img
-              src={preview}
-              alt="Preview"
-              style={{ maxHeight: 80, borderRadius: 6, border: "1px solid rgba(201,168,76,0.2)" }}
-            />
-            <button
-              type="button"
-              onClick={() => { set("image_url", ""); if (fileInputRef.current) fileInputRef.current.value = ""; }}
-              className="absolute -top-1.5 -right-1.5 rounded-full p-0.5"
-              style={{ background: "#ef4444", color: "#fff" }}
-            >
-              <X className="size-3" />
-            </button>
-          </div>
-        )}
+        </div>
       </div>
 
+      {/* ── Slot + Display mode ── */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#9aa3b8" }}>Slot <span style={{ color: "#c9a84c" }}>*</span></label>
+          <select
+            value={form.slot}
+            onChange={(e) => set("slot", e.target.value)}
+            className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+            style={{ background: "#0d1b3e", borderColor: "rgba(201,168,76,0.2)", color: "#f5f0e8" }}
+          >
+            {SLOT_ORDER.map((s) => <option key={s} value={s}>{SLOT_LABELS[s]}</option>)}
+          </select>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#9aa3b8" }}>Display Mode <span style={{ color: "#c9a84c" }}>*</span></label>
+          <select
+            value={form.display_mode}
+            onChange={(e) => set("display_mode", e.target.value)}
+            className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+            style={{ background: "#0d1b3e", borderColor: "rgba(201,168,76,0.2)", color: "#f5f0e8" }}
+          >
+            {(Object.entries(DISPLAY_MODE_LABELS) as [AdDisplayMode, string][]).map(([val, label]) => (
+              <option key={val} value={val}>{label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* ── Text fields — shown for text_only and text_image ── */}
+      {needsText && (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            {field("Label", "label", { placeholder: "Sponsored", max: 20, required: true })}
+            {field("CTA Text", "cta_text", { placeholder: "Learn More", max: 15, required: true })}
+          </div>
+          {field("Headline", "headline", { placeholder: "Invest in Ghana — From Anywhere", max: 45, required: true })}
+          {field("Body", "body", { placeholder: "Short benefit-led description", max: 135, required: true })}
+        </>
+      )}
+
+      {/* CTA URL always required */}
+      {field("CTA URL", "cta_url", { placeholder: "https://", type: "url", required: true })}
+
+      {/* ── Image — shown for image_only and text_image ── */}
+      {needsImage && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#9aa3b8" }}>
+              Image <span style={{ color: "#c9a84c" }}>*</span>
+              <span className="ml-1 font-normal normal-case">— {SLOT_DIMENSIONS[form.slot as AdSlot]}, max 300 KB</span>
+            </label>
+            <div className="flex rounded-lg overflow-hidden border text-xs" style={{ borderColor: "rgba(201,168,76,0.2)" }}>
+              {(["url", "upload"] as const).map((m) => (
+                <button key={m} type="button" onClick={() => switchImageMode(m)}
+                  className="flex items-center gap-1 px-3 py-1.5 transition-colors"
+                  style={{ background: imageMode === m ? "rgba(201,168,76,0.15)" : "transparent", color: imageMode === m ? "#c9a84c" : "#9aa3b8" }}
+                >
+                  {m === "url" ? <Link2 className="size-3" /> : <Upload className="size-3" />}
+                  {m === "url" ? "URL" : "Upload"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {imageMode === "url" && (
+            <input type="url" placeholder="https://..." value={form.image_url ?? ""}
+              onChange={(e) => set("image_url", e.target.value)}
+              className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-1"
+              style={inputStyle}
+            />
+          )}
+
+          {imageMode === "upload" && (
+            <>
+              <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/gif,image/webp"
+                onChange={handleFileChange} className="hidden" id="ad-image-upload" />
+              <label htmlFor="ad-image-upload"
+                className="flex items-center justify-center gap-2 w-full rounded-lg border px-3 py-3 text-sm cursor-pointer transition-colors hover:bg-white/5"
+                style={{ borderColor: "rgba(201,168,76,0.2)", borderStyle: "dashed", color: "#9aa3b8" }}
+              >
+                {uploading ? <><Loader2 className="size-4 animate-spin" /> Uploading…</> : <><Upload className="size-4" /> Click to choose a file</>}
+              </label>
+            </>
+          )}
+
+          {preview && (
+            <div className="relative inline-block">
+              <img src={preview} alt="Preview" style={{ maxHeight: 80, borderRadius: 6, border: "1px solid rgba(201,168,76,0.2)" }} />
+              <button type="button" onClick={() => { set("image_url", ""); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                className="absolute -top-1.5 -right-1.5 rounded-full p-0.5" style={{ background: "#ef4444", color: "#fff" }}>
+                <X className="size-3" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Active Until ── */}
       <div className="space-y-1">
-        <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#9aa3b8" }}>
-          Active Until (optional)
-        </label>
-        <input
-          type="datetime-local"
+        <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#9aa3b8" }}>Active Until (optional)</label>
+        <input type="datetime-local"
           value={form.active_until ? form.active_until.slice(0, 16) : ""}
-          onChange={(e) =>
-            set("active_until", e.target.value ? new Date(e.target.value).toISOString() : "")
-          }
+          onChange={(e) => set("active_until", e.target.value ? new Date(e.target.value).toISOString() : "")}
           className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-1"
           style={{ ...inputStyle, colorScheme: "dark" }}
         />
       </div>
 
-      {err && (
-        <p className="text-xs flex items-center gap-1.5" style={{ color: "#ef4444" }}>
-          <AlertCircle className="size-3.5" /> {err}
-        </p>
-      )}
+      {err && <p className="text-xs flex items-center gap-1.5" style={{ color: "#ef4444" }}><AlertCircle className="size-3.5" /> {err}</p>}
 
       <div className="flex gap-2 pt-1">
-        <button
-          onClick={save}
-          disabled={saving || uploading}
+        <button onClick={save} disabled={saving || uploading}
           className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold transition-colors disabled:opacity-50"
-          style={{ background: "#c9a84c", color: "#0d1b3e" }}
-        >
-          {saving ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
-          Save
+          style={{ background: "#c9a84c", color: "#0d1b3e" }}>
+          {saving ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />} Save
         </button>
-        <button
-          onClick={onCancel}
+        <button onClick={onCancel}
           className="flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-white/5"
-          style={{ borderColor: "rgba(201,168,76,0.2)", color: "#9aa3b8" }}
-        >
+          style={{ borderColor: "rgba(201,168,76,0.2)", color: "#9aa3b8" }}>
           <X className="size-3.5" /> Cancel
         </button>
       </div>
@@ -649,29 +629,68 @@ function AdRow({ ad, onEdit, onDelete }: { ad: Ad; onEdit: () => void; onDelete:
         opacity: expired ? 0.6 : 1,
       }}
     >
-      <div className="space-y-1 min-w-0">
+      <div className="space-y-1.5 min-w-0">
+        {/* Name + badges row */}
         <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm font-semibold truncate" style={{ color: "#f5f0e8" }}>
+            {ad.name || <span style={{ color: "#9aa3b8", fontStyle: "italic" }}>Unnamed</span>}
+          </span>
           <span
-            className="text-xs px-2 py-0.5 rounded-full font-semibold"
-            style={{ background: "rgba(201,168,76,0.15)", color: "#c9a84c" }}
+            className="text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0"
+            style={{ background: "rgba(201,168,76,0.12)", color: "#c9a84c" }}
           >
-            {ad.label}
+            {DISPLAY_MODE_LABELS[ad.display_mode]}
           </span>
           {expired && (
             <span
-              className="text-xs px-2 py-0.5 rounded-full font-semibold"
+              className="text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0"
               style={{ background: "rgba(239,68,68,0.15)", color: "#ef4444" }}
             >
               Expired
             </span>
           )}
         </div>
-        <p className="text-sm font-semibold truncate" style={{ color: "#f5f0e8" }}>{ad.headline}</p>
-        <p className="text-xs truncate" style={{ color: "#9aa3b8" }}>{ad.body}</p>
+
+        {/* Tags */}
+        {ad.tags && ad.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {ad.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-xs px-1.5 py-0.5 rounded"
+                style={{ background: "rgba(255,255,255,0.06)", color: "#9aa3b8" }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Content preview */}
+        {(ad.display_mode === "text_only" || ad.display_mode === "text_image") && (
+          <>
+            {ad.headline && (
+              <p className="text-xs font-semibold truncate" style={{ color: "#d4c9a8" }}>{ad.headline}</p>
+            )}
+            {ad.body && (
+              <p className="text-xs truncate" style={{ color: "#9aa3b8" }}>{ad.body}</p>
+            )}
+          </>
+        )}
+        {(ad.display_mode === "image_only" || ad.display_mode === "text_image") && ad.image_url && (
+          <img
+            src={ad.image_url}
+            alt="Ad preview"
+            style={{ maxHeight: 48, borderRadius: 4, border: "1px solid rgba(201,168,76,0.15)" }}
+          />
+        )}
+
+        {/* CTA + expiry */}
         <div className="flex items-center gap-3 text-xs" style={{ color: "rgba(154,163,184,0.6)" }}>
-          <span>{ad.cta_text} → {ad.cta_url}</span>
+          {ad.cta_text && <span>{ad.cta_text} →</span>}
+          <span className="truncate">{ad.cta_url}</span>
           {ad.active_until && (
-            <span>
+            <span className="flex-shrink-0">
               Until {new Date(ad.active_until).toLocaleString("en-US", {
                 month: "short", day: "numeric", year: "numeric",
                 hour: "2-digit", minute: "2-digit",

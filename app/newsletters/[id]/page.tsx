@@ -42,19 +42,30 @@ function useRotatingAd(ads: Ad[], intervalSeconds: number): Ad | null {
 // ---------------------------------------------------------------------------
 
 function LeaderboardAd({ ad }: { ad: Ad }) {
-  // Don't render an empty shell if there's nothing to show
   if (!ad.image_url && !ad.headline) return null;
+  const mode = ad.display_mode;
   return (
     <div className="newsletter-ad newsletter-ad--leaderboard">
       <a href={ad.cta_url} target="_blank" rel="noopener noreferrer" className="newsletter-ad-leaderboard-inner">
-        {ad.image_url ? (
-          <img src={ad.image_url} alt={ad.headline} className="newsletter-ad-leaderboard-img" />
-        ) : (
+        {mode === "image_only" && ad.image_url && (
+          <img src={ad.image_url} alt={ad.headline ?? ""} className="newsletter-ad-leaderboard-img" />
+        )}
+        {mode === "text_only" && (
           <div className="newsletter-ad-leaderboard-text">
             <span className="newsletter-ad-label">{ad.label}</span>
             <span className="newsletter-ad-headline" style={{ fontSize: 14 }}>{ad.headline}</span>
             <span className="newsletter-ad-cta" style={{ marginLeft: 16 }}>{ad.cta_text}</span>
           </div>
+        )}
+        {mode === "text_image" && (
+          <>
+            {ad.image_url && <img src={ad.image_url} alt={ad.headline ?? ""} className="newsletter-ad-leaderboard-img" style={{ maxHeight: "100%", width: "auto", flexShrink: 0 }} />}
+            <div className="newsletter-ad-leaderboard-text" style={{ flex: 1 }}>
+              <span className="newsletter-ad-label">{ad.label}</span>
+              <span className="newsletter-ad-headline" style={{ fontSize: 14 }}>{ad.headline}</span>
+              <span className="newsletter-ad-cta" style={{ marginLeft: 16 }}>{ad.cta_text}</span>
+            </div>
+          </>
         )}
       </a>
     </div>
@@ -63,7 +74,17 @@ function LeaderboardAd({ ad }: { ad: Ad }) {
 
 // Medium rect — floated right, text wraps around it. Injected into body HTML.
 function MediumRectAd({ ad }: { ad: Ad }) {
-  if (ad.image_url) {
+  const mode = ad.display_mode;
+  if (mode === "image_only") {
+    return (
+      <div className="newsletter-ad newsletter-ad--medium-rect" style={{ position: "relative", float: "right", marginLeft: 24, marginBottom: 16 }}>
+        <a href={ad.cta_url} target="_blank" rel="noopener noreferrer" style={{ display: "block", lineHeight: 0 }}>
+          <img src={ad.image_url} alt="" className="newsletter-ad-img" />
+        </a>
+      </div>
+    );
+  }
+  if (mode === "text_image") {
     return (
       <div className="newsletter-ad newsletter-ad--medium-rect" style={{ position: "relative", float: "right", marginLeft: 24, marginBottom: 16 }}>
         <img src={ad.image_url} alt={ad.headline} className="newsletter-ad-img" />
@@ -71,7 +92,7 @@ function MediumRectAd({ ad }: { ad: Ad }) {
           href={ad.cta_url}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ position: "absolute", bottom: 12, left: 12, right: 12, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}
+          style={{ position: "absolute", bottom: 12, left: 12, right: 12, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8, textDecoration: "none" }}
         >
           <span className="newsletter-ad-headline" style={{ fontSize: 13, textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>{ad.headline}</span>
           <span className="newsletter-ad-cta" style={{ fontSize: 11, padding: "6px 12px", flexShrink: 0 }}>{ad.cta_text}</span>
@@ -79,6 +100,7 @@ function MediumRectAd({ ad }: { ad: Ad }) {
       </div>
     );
   }
+  // text_only
   return (
     <div className="newsletter-ad newsletter-ad--medium-rect" style={{ float: "right", marginLeft: 24, marginBottom: 16 }}>
       <div className="newsletter-ad-inner" style={{ flexDirection: "column", alignItems: "flex-start", gap: 12, height: "100%", boxSizing: "border-box" as const }}>
@@ -95,6 +117,36 @@ function MediumRectAd({ ad }: { ad: Ad }) {
 
 // Native — full-width inline, gold left border, mid-content
 function NativeAd({ ad }: { ad: Ad }) {
+  const mode = ad.display_mode;
+  if (mode === "image_only") {
+    return (
+      <div className="newsletter-ad--native-inline" style={{ padding: 0, border: "none" }}>
+        <a href={ad.cta_url} target="_blank" rel="noopener noreferrer" style={{ display: "block", lineHeight: 0 }}>
+          <img src={ad.image_url} alt="" style={{ width: "100%", display: "block", borderRadius: 4 }} />
+        </a>
+      </div>
+    );
+  }
+  if (mode === "text_image") {
+    return (
+      <div className="newsletter-ad--native-inline">
+        <div className="newsletter-ad--native-tag">{ad.label}</div>
+        <div className="newsletter-ad--native-body" style={{ alignItems: "center", gap: 16 }}>
+          {ad.image_url && (
+            <img src={ad.image_url} alt={ad.headline} style={{ width: 120, height: 80, objectFit: "cover", borderRadius: 4, flexShrink: 0 }} />
+          )}
+          <div className="newsletter-ad--native-text" style={{ flex: 1 }}>
+            <p className="newsletter-ad--native-headline">{ad.headline}</p>
+            <p className="newsletter-ad--native-sub">{ad.body}</p>
+          </div>
+          <a className="newsletter-ad-cta newsletter-ad--native-cta" href={ad.cta_url} target="_blank" rel="noopener noreferrer">
+            {ad.cta_text}
+          </a>
+        </div>
+      </div>
+    );
+  }
+  // text_only
   return (
     <div className="newsletter-ad--native-inline">
       <div className="newsletter-ad--native-tag">{ad.label}</div>
@@ -113,13 +165,26 @@ function NativeAd({ ad }: { ad: Ad }) {
 
 // Half page — centered between content and footer
 function HalfPageAd({ ad }: { ad: Ad }) {
+  const mode = ad.display_mode;
+  if (mode === "image_only") {
+    return (
+      <div className="newsletter-ad--half-page-wrap">
+        <div className="newsletter-ad--half-page-label">Advertisement</div>
+        <a href={ad.cta_url} target="_blank" rel="noopener noreferrer" className="newsletter-ad--half-page-link" style={{ display: "block", lineHeight: 0 }}>
+          <div className="newsletter-ad newsletter-ad--half-page" style={{ padding: 0, overflow: "hidden" }}>
+            <img src={ad.image_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          </div>
+        </a>
+      </div>
+    );
+  }
   return (
     <div className="newsletter-ad--half-page-wrap">
       <div className="newsletter-ad--half-page-label">Advertisement</div>
       <a href={ad.cta_url} target="_blank" rel="noopener noreferrer" className="newsletter-ad--half-page-link">
         <div className="newsletter-ad newsletter-ad--half-page">
           <div className="newsletter-ad-half-page-inner">
-            {ad.image_url && (
+            {mode === "text_image" && ad.image_url && (
               <img src={ad.image_url} alt={ad.headline} className="newsletter-ad-half-page-img" />
             )}
             <span className="newsletter-ad-label">{ad.label}</span>
@@ -351,10 +416,19 @@ export default function NewsletterArticlePage() {
 // ---------------------------------------------------------------------------
 
 function buildMediumRectHtml(ad: Ad): string {
-  if (ad.image_url) {
+  const mode = ad.display_mode;
+  if (mode === "image_only") {
     return `
       <div class="newsletter-ad newsletter-ad--medium-rect" style="position:relative;">
-        <img src="${esc(ad.image_url)}" alt="${esc(ad.headline)}" class="newsletter-ad-img" />
+        <a href="${esc(ad.cta_url)}" target="_blank" rel="noopener noreferrer" style="display:block;line-height:0;">
+          <img src="${esc(ad.image_url ?? "")}" alt="" class="newsletter-ad-img" />
+        </a>
+      </div>`;
+  }
+  if (mode === "text_image") {
+    return `
+      <div class="newsletter-ad newsletter-ad--medium-rect" style="position:relative;">
+        <img src="${esc(ad.image_url ?? "")}" alt="${esc(ad.headline)}" class="newsletter-ad-img" />
         <a href="${esc(ad.cta_url)}" target="_blank" rel="noopener noreferrer"
            style="position:absolute;bottom:12px;left:12px;right:12px;display:flex;align-items:flex-end;justify-content:space-between;gap:8px;text-decoration:none;">
           <span class="newsletter-ad-headline" style="font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,0.6);">${esc(ad.headline)}</span>
@@ -362,6 +436,7 @@ function buildMediumRectHtml(ad: Ad): string {
         </a>
       </div>`;
   }
+  // text_only
   return `
     <div class="newsletter-ad newsletter-ad--medium-rect">
       <div class="newsletter-ad-inner" style="flex-direction:column;align-items:flex-start;gap:12px;height:100%;box-sizing:border-box;">
@@ -376,6 +451,30 @@ function buildMediumRectHtml(ad: Ad): string {
 }
 
 function buildNativeHtml(ad: Ad): string {
+  const mode = ad.display_mode;
+  if (mode === "image_only") {
+    return `
+      <div class="newsletter-ad--native-inline" style="padding:0;border:none;">
+        <a href="${esc(ad.cta_url)}" target="_blank" rel="noopener noreferrer" style="display:block;line-height:0;">
+          <img src="${esc(ad.image_url ?? "")}" alt="" style="width:100%;display:block;border-radius:4px;" />
+        </a>
+      </div>`;
+  }
+  if (mode === "text_image") {
+    return `
+      <div class="newsletter-ad--native-inline">
+        <div class="newsletter-ad--native-tag">${esc(ad.label)}</div>
+        <div class="newsletter-ad--native-body" style="align-items:center;gap:16px;">
+          ${ad.image_url ? `<img src="${esc(ad.image_url)}" alt="${esc(ad.headline)}" style="width:120px;height:80px;object-fit:cover;border-radius:4px;flex-shrink:0;" />` : ""}
+          <div class="newsletter-ad--native-text" style="flex:1;">
+            <p class="newsletter-ad--native-headline">${esc(ad.headline)}</p>
+            <p class="newsletter-ad--native-sub">${esc(ad.body)}</p>
+          </div>
+          <a class="newsletter-ad-cta newsletter-ad--native-cta" href="${esc(ad.cta_url)}" target="_blank" rel="noopener noreferrer">${esc(ad.cta_text)}</a>
+        </div>
+      </div>`;
+  }
+  // text_only
   return `
     <div class="newsletter-ad--native-inline">
       <div class="newsletter-ad--native-tag">${esc(ad.label)}</div>

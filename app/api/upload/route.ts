@@ -4,7 +4,7 @@ import { getStorage } from "firebase-admin/storage";
 import { db } from "@/lib/firestore"; // ensures firebase-admin is initialised
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-const MAX_BYTES = 200 * 1024; // 200 KB — IAB LEAN max
+const MAX_BYTES = 300 * 1024; // 300 KB
 
 // Signed URLs expire after 10 years (max allowed is 7 days for service accounts
 // without domain-wide delegation, but for ad images we want them permanent).

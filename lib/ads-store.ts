@@ -2,16 +2,24 @@ import { db } from "@/lib/firestore";
 
 export type AdSlot = "leaderboard" | "medium_rect" | "native" | "half_page";
 
+// image_only  — image fills the entire ad block, no text overlay
+// text_only   — no image, text + CTA only
+// text_image  — image + text/CTA together
+export type AdDisplayMode = "image_only" | "text_only" | "text_image";
+
 export type Ad = {
-  id: string;           // Firestore document ID
+  id: string;
+  name: string;           // internal reference name, required
+  tags: string[];         // for filtering, e.g. ["real-estate", "caribbean"]
   slot: AdSlot;
-  label: string;        // e.g. "Sponsored" | "Partner Offer"
-  headline: string;     // max 45 chars per spec
-  body: string;         // max 135 chars per spec
-  cta_text: string;     // max 15 chars per spec
-  cta_url: string;      // must be HTTPS
-  image_url?: string;   // optional — used by leaderboard / half-page image units
-  active_until?: string; // ISO 8601 — if set and in the past, ad is suppressed
+  display_mode: AdDisplayMode;
+  label: string;          // e.g. "Sponsored" — not required for image_only
+  headline: string;       // max 45 chars — not required for image_only
+  body: string;           // max 135 chars — not required for image_only
+  cta_text: string;       // max 15 chars — not required for image_only
+  cta_url: string;        // required always
+  image_url?: string;     // required for image_only and text_image
+  active_until?: string;  // ISO 8601 — if set and past, ad is suppressed
 };
 
 const COL = "ads";
@@ -51,12 +59,16 @@ export async function getAllAds(): Promise<Ad[]> {
 
 export async function upsertAd(id: string | null, data: Omit<Ad, "id">): Promise<Ad> {
   const col = db().collection(COL);
+  // Firestore rejects undefined values — strip them before writing
+  const clean = Object.fromEntries(
+    Object.entries(data).filter(([, v]) => v !== undefined)
+  ) as Omit<Ad, "id">;
   if (id) {
-    await col.doc(id).set(data, { merge: true });
-    return { id, ...data };
+    await col.doc(id).set(clean, { merge: true });
+    return { id, ...clean };
   }
-  const ref = await col.add(data);
-  return { id: ref.id, ...data };
+  const ref = await col.add(clean);
+  return { id: ref.id, ...clean };
 }
 
 export async function deleteAd(id: string): Promise<void> {
