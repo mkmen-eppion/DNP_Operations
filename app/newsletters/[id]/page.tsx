@@ -164,9 +164,13 @@ function injectAdsIntoBody(
   const hrTag = '<hr style="border:none;border-top:1px solid #e0e0e0;margin:24px 0;"/>';
 
   if (mediumRectHtml) {
-    const idx = result.indexOf(hrTag);
-    if (idx !== -1) {
-      const insertAt = idx + hrTag.length;
+    // Inject before the first <p> after the first <hr> so the ad floats
+    // right inside the text block rather than above it
+    const hrIdx = result.indexOf(hrTag);
+    if (hrIdx !== -1) {
+      const afterHr = hrIdx + hrTag.length;
+      const pIdx = result.indexOf("<p", afterHr);
+      const insertAt = pIdx !== -1 ? pIdx : afterHr;
       result = result.slice(0, insertAt) + mediumRectHtml + result.slice(insertAt);
     }
   }
