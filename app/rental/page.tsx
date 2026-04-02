@@ -172,8 +172,17 @@ export default function RentalPage() {
     e.preventDefault();
     if (!canSubmit) return;
     setStatus("loading");
-    await new Promise((r) => setTimeout(r, 1200));
-    setStatus("success");
+    const res = await fetch("/api/rental-waitlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+    if (res.ok) {
+      setStatus("success");
+    } else {
+      setStatus("idle");
+      alert("Something went wrong. Please try again.");
+    }
   }
 
   const disabled = status === "loading";

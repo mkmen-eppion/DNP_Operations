@@ -228,9 +228,17 @@ export default function MortgagePage() {
     e.preventDefault();
     if (!canSubmit) return;
     setStatus("loading");
-    // Simulate submission — replace with real API call when ready
-    await new Promise((r) => setTimeout(r, 1200));
-    setStatus("success");
+    const res = await fetch("/api/mortgage-waitlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+    if (res.ok) {
+      setStatus("success");
+    } else {
+      setStatus("idle");
+      alert("Something went wrong. Please try again.");
+    }
   }
 
   return (
