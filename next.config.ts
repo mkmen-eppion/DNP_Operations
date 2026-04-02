@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
     FIREBASE_PRIVATE_KEY_BASE64: process.env.FIREBASE_PRIVATE_KEY_BASE64 ?? "",
     FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET ?? "",
     NEWSLETTERS_API_KEY: process.env.NEWSLETTERS_API_KEY ?? "",
+    AIRTABLE_TOKEN: process.env.AIRTABLE_TOKEN ?? "",
+    AIRTABLE_BASE_ID: process.env.AIRTABLE_BASE_ID ?? "",
+    AIRTABLE_RENTAL_TABLE_ID: process.env.AIRTABLE_RENTAL_TABLE_ID ?? "",
+    AIRTABLE_MORTGAGE_TABLE_ID: process.env.AIRTABLE_MORTGAGE_TABLE_ID ?? "",
   },
   async headers() {
     return [
