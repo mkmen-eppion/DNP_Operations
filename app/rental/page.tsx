@@ -5,7 +5,6 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Card,
@@ -111,40 +110,15 @@ function SI({ value, children }: { value: string; children: React.ReactNode }) {
   );
 }
 
-function CheckGroup({
-  label,
-  checked,
-  onChange,
-  disabled,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-  disabled?: boolean;
-}) {
-  const id = label.toLowerCase().replace(/\s+/g, "-");
-  return (
-    <div className="flex items-center gap-2.5">
-      <Checkbox
-        id={id}
-        checked={checked}
-        onCheckedChange={(v) => onChange(!!v)}
-        disabled={disabled}
-        className="border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
-      />
-      <Label htmlFor={id} className="text-sm cursor-pointer" style={{ color: "#9aa3b8" }}>
-        {label}
-      </Label>
-    </div>
-  );
-}
-
 type FormData = {
   // S1
   firstName: string;
   lastName: string;
+  age: string;
   email: string;
   phone: string;
+  city: string;
+  state: string;
   country: string;
   citizenship: string;
   // S2
@@ -156,45 +130,24 @@ type FormData = {
   annualIncome: string;
   liquidCapital: string;
   firstAllocation: string;
-  creditScore: string;
   // S4
   timeline: string;
   readyToMove: string;
-  capitalIn60Days: string;
-  // S5
-  comfortableWithStructure: string;
-  profitSharing: boolean;
-  sharedRent: boolean;
-  monthlyDistributions: boolean;
-  involvement: string;
-  // S6
-  goalPassiveIncome: boolean;
-  goalEntryRE: boolean;
-  goalInternational: boolean;
-  goalDiversification: boolean;
-  goalWealth: boolean;
-  targetIncome: string;
-  // S7
-  interestedInGhana: string;
-  investedBefore: string;
-  // S8
-  barriers: string;
-  // S9
-  nextSteps: string;
+  // Communication
+  preferredComms: string;
+  // Newsletter
+  subscribeNewsletter: boolean;
   // Consent
   consent: boolean;
 };
 
 const initial: FormData = {
-  firstName: "", lastName: "", email: "", phone: "", country: "", citizenship: "",
+  firstName: "", lastName: "", age: "", email: "", phone: "", city: "", state: "", country: "", citizenship: "",
   occupation: "", industry: "", yearsEmployed: "", investorType: "",
-  annualIncome: "", liquidCapital: "", firstAllocation: "", creditScore: "",
-  timeline: "", readyToMove: "", capitalIn60Days: "",
-  comfortableWithStructure: "", profitSharing: false, sharedRent: false, monthlyDistributions: false, involvement: "",
-  goalPassiveIncome: false, goalEntryRE: false, goalInternational: false, goalDiversification: false, goalWealth: false, targetIncome: "",
-  interestedInGhana: "", investedBefore: "",
-  barriers: "",
-  nextSteps: "",
+  annualIncome: "", liquidCapital: "", firstAllocation: "",
+  timeline: "", readyToMove: "",
+  preferredComms: "",
+  subscribeNewsletter: false,
   consent: false,
 };
 
@@ -265,7 +218,7 @@ export default function RentalPage() {
             </CardDescription>
             <p className="text-xs mt-3 leading-relaxed" style={{ color: "#9aa3b8" }}>
               This program allows you to partner with DPN-Global to operate a short-term rental unit
-              in Ghana 🇬🇭 for a fixed 6–8 month period — earning income while gaining real market
+              in Ghana 🇬🇭 for a 12 month period — earning income while gaining real market
               experience. Complete this form to receive early access to upcoming opportunities.
             </p>
             <p className="text-xs mt-3" style={{ color: "#9aa3b8" }}>
@@ -303,6 +256,11 @@ export default function RentalPage() {
                 </div>
 
                 <div className="space-y-2">
+                  <FieldLabel htmlFor="age">Age</FieldLabel>
+                  <Input id="age" type="number" min={18} max={100} value={form.age} onChange={(e) => set("age")(e.target.value)} placeholder="35" disabled={disabled} style={inputStyle} className={inputClass} />
+                </div>
+
+                <div className="space-y-2">
                   <FieldLabel htmlFor="email" required>Email Address</FieldLabel>
                   <Input id="email" type="email" value={form.email} onChange={(e) => set("email")(e.target.value)} placeholder="you@example.com" required disabled={disabled} style={inputStyle} className={inputClass} />
                 </div>
@@ -312,15 +270,25 @@ export default function RentalPage() {
                   <Input id="phone" type="tel" value={form.phone} onChange={(e) => set("phone")(e.target.value)} placeholder="+1 (555) 000-0000" required disabled={disabled} style={inputStyle} className={inputClass} />
                 </div>
 
+                <div className="space-y-2">
+                  <FieldLabel htmlFor="country" required>Country of Residence</FieldLabel>
+                  <Input id="country" value={form.country} onChange={(e) => set("country")(e.target.value)} placeholder="United States" required disabled={disabled} style={inputStyle} className={inputClass} />
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="country" required>Country of Residence</FieldLabel>
-                    <Input id="country" value={form.country} onChange={(e) => set("country")(e.target.value)} placeholder="United States" required disabled={disabled} style={inputStyle} className={inputClass} />
+                    <FieldLabel htmlFor="city">City</FieldLabel>
+                    <Input id="city" value={form.city} onChange={(e) => set("city")(e.target.value)} placeholder="New York" disabled={disabled} style={inputStyle} className={inputClass} />
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="citizenship" required>Citizenship</FieldLabel>
-                    <Input id="citizenship" value={form.citizenship} onChange={(e) => set("citizenship")(e.target.value)} placeholder="Ghanaian" required disabled={disabled} style={inputStyle} className={inputClass} />
+                    <FieldLabel htmlFor="state">State / Province</FieldLabel>
+                    <Input id="state" value={form.state} onChange={(e) => set("state")(e.target.value)} placeholder="NY" disabled={disabled} style={inputStyle} className={inputClass} />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <FieldLabel htmlFor="citizenship" required>Citizenship</FieldLabel>
+                  <Input id="citizenship" value={form.citizenship} onChange={(e) => set("citizenship")(e.target.value)} placeholder="Ghanaian" required disabled={disabled} style={inputStyle} className={inputClass} />
                 </div>
 
                 {/* ── Section 2 ── */}
@@ -351,10 +319,8 @@ export default function RentalPage() {
                 <div className="space-y-2">
                   <FieldLabel htmlFor="investorType">Which best describes you?</FieldLabel>
                   <StyledSelect id="investorType" value={form.investorType} onChange={set("investorType") as (v: string) => void} placeholder="Select" disabled={disabled}>
-                    <SI value="first-time">First-Time Investor</SI>
-                    <SI value="real-estate">Real Estate Investor</SI>
-                    <SI value="business-owner">Business Owner</SI>
-                    <SI value="corporate">Corporate Professional</SI>
+                    <SI value="first-time">First Time Investor</SI>
+                    <SI value="seasoned">Seasoned Investor</SI>
                   </StyledSelect>
                 </div>
 
@@ -392,16 +358,6 @@ export default function RentalPage() {
                   </StyledSelect>
                 </div>
 
-                <div className="space-y-2">
-                  <FieldLabel htmlFor="creditScore">Estimated Credit Score Range <span className="text-xs font-normal" style={{ color: "#9aa3b8" }}>(Optional)</span></FieldLabel>
-                  <StyledSelect id="creditScore" value={form.creditScore} onChange={set("creditScore") as (v: string) => void} placeholder="Select range" disabled={disabled}>
-                    <SI value="500-600">500–600</SI>
-                    <SI value="600-680">600–680</SI>
-                    <SI value="680-750">680–750</SI>
-                    <SI value="750+">750+</SI>
-                  </StyledSelect>
-                </div>
-
                 {/* ── Section 4 ── */}
                 <SectionHeading number="4">Investment Readiness</SectionHeading>
                 <Divider />
@@ -425,120 +381,37 @@ export default function RentalPage() {
                   </StyledSelect>
                 </div>
 
+                {/* ── Preferred Communication ── */}
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="capitalIn60Days">Are you prepared to allocate capital within the next 60 days if the opportunity makes sense?</FieldLabel>
-                  <StyledSelect id="capitalIn60Days" value={form.capitalIn60Days} onChange={set("capitalIn60Days") as (v: string) => void} placeholder="Select" disabled={disabled}>
-                    <SI value="yes">Yes</SI>
-                    <SI value="no">No</SI>
-                    <SI value="possibly">Possibly</SI>
+                  <FieldLabel htmlFor="preferredComms">Preferred Mode of Communication</FieldLabel>
+                  <StyledSelect id="preferredComms" value={form.preferredComms} onChange={set("preferredComms") as (v: string) => void} placeholder="Select" disabled={disabled}>
+                    <SI value="whatsapp">WhatsApp</SI>
+                    <SI value="email">Email</SI>
+                    <SI value="phone-call">Phone Call</SI>
                   </StyledSelect>
                 </div>
 
-                {/* ── Section 5 ── */}
-                <SectionHeading number="5">Program Alignment</SectionHeading>
-                <Divider />
-
-                <div className="space-y-2">
-                  <FieldLabel htmlFor="comfortableWithStructure">Are you comfortable with a 6–8 month rental partnership structure?</FieldLabel>
-                  <StyledSelect id="comfortableWithStructure" value={form.comfortableWithStructure} onChange={set("comfortableWithStructure") as (v: string) => void} placeholder="Select" disabled={disabled}>
-                    <SI value="yes">Yes</SI>
-                    <SI value="no">No</SI>
-                    <SI value="more-info">Need more information</SI>
-                  </StyledSelect>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-sm" style={{ color: "#f5f0e8" }}>Are you comfortable with: <span className="text-xs" style={{ color: "#9aa3b8" }}>(Select all that apply)</span></p>
-                  <div className="space-y-2 pt-1">
-                    <CheckGroup label="Profit sharing with DPN" checked={form.profitSharing} onChange={(v) => set("profitSharing")(v)} disabled={disabled} />
-                    <CheckGroup label="Shared rent responsibility" checked={form.sharedRent} onChange={(v) => set("sharedRent")(v)} disabled={disabled} />
-                    <CheckGroup label="Monthly income distributions" checked={form.monthlyDistributions} onChange={(v) => set("monthlyDistributions")(v)} disabled={disabled} />
+                {/* ── Join The Newsletter ── */}
+                <div
+                  className="rounded-lg p-4 space-y-2"
+                  style={{ backgroundColor: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.2)" }}
+                >
+                  <p className="text-sm font-semibold" style={{ color: "#c9a84c" }}>Join The Newsletter</p>
+                  <p className="text-xs" style={{ color: "#9aa3b8" }}>
+                    Stay up to date with DPN-Global property news, market insights, and exclusive opportunities.
+                  </p>
+                  <div className="flex items-center gap-2.5 pt-1">
+                    <Checkbox
+                      id="subscribeNewsletter"
+                      checked={form.subscribeNewsletter}
+                      onCheckedChange={(v) => set("subscribeNewsletter")(!!v)}
+                      disabled={disabled}
+                      className="border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
+                    />
+                    <Label htmlFor="subscribeNewsletter" className="text-sm cursor-pointer" style={{ color: "#9aa3b8" }}>
+                      Yes, subscribe me to the DPN-Global newsletter
+                    </Label>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <FieldLabel htmlFor="involvement">Preferred level of involvement</FieldLabel>
-                  <StyledSelect id="involvement" value={form.involvement} onChange={set("involvement") as (v: string) => void} placeholder="Select" disabled={disabled}>
-                    <SI value="fully-passive">Fully Passive</SI>
-                    <SI value="semi-involved">Semi-Involved</SI>
-                    <SI value="active">Active Participation</SI>
-                  </StyledSelect>
-                </div>
-
-                {/* ── Section 6 ── */}
-                <SectionHeading number="6">Investment Goals &amp; Expectations</SectionHeading>
-                <Divider />
-
-                <div className="space-y-2">
-                  <p className="text-sm" style={{ color: "#f5f0e8" }}>What is your primary goal? <span className="text-xs" style={{ color: "#9aa3b8" }}>(Select all that apply)</span></p>
-                  <div className="space-y-2 pt-1">
-                    <CheckGroup label="Passive Income" checked={form.goalPassiveIncome} onChange={(v) => set("goalPassiveIncome")(v)} disabled={disabled} />
-                    <CheckGroup label="Entry into Real Estate" checked={form.goalEntryRE} onChange={(v) => set("goalEntryRE")(v)} disabled={disabled} />
-                    <CheckGroup label="International Investment Exposure" checked={form.goalInternational} onChange={(v) => set("goalInternational")(v)} disabled={disabled} />
-                    <CheckGroup label="Portfolio Diversification" checked={form.goalDiversification} onChange={(v) => set("goalDiversification")(v)} disabled={disabled} />
-                    <CheckGroup label="Wealth Building" checked={form.goalWealth} onChange={(v) => set("goalWealth")(v)} disabled={disabled} />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <FieldLabel htmlFor="targetIncome">Target monthly income from this investment</FieldLabel>
-                  <StyledSelect id="targetIncome" value={form.targetIncome} onChange={set("targetIncome") as (v: string) => void} placeholder="Select range" disabled={disabled}>
-                    <SI value="200-500">$200 – $500</SI>
-                    <SI value="500-1000">$500 – $1,000</SI>
-                    <SI value="1000+">$1,000+</SI>
-                  </StyledSelect>
-                </div>
-
-                {/* ── Section 7 ── */}
-                <SectionHeading number="7">Market Interest <span className="normal-case font-normal text-xs tracking-normal" style={{ color: "#9aa3b8" }}>(DPN Advantage)</span></SectionHeading>
-                <Divider />
-
-                <div className="space-y-2">
-                  <FieldLabel htmlFor="interestedInGhana">Are you specifically interested in opportunities in Ghana?</FieldLabel>
-                  <StyledSelect id="interestedInGhana" value={form.interestedInGhana} onChange={set("interestedInGhana") as (v: string) => void} placeholder="Select" disabled={disabled}>
-                    <SI value="yes">Yes</SI>
-                    <SI value="open">Open to other markets</SI>
-                  </StyledSelect>
-                </div>
-
-                <div className="space-y-2">
-                  <FieldLabel htmlFor="investedBefore">Have you invested in Ghana or internationally before?</FieldLabel>
-                  <StyledSelect id="investedBefore" value={form.investedBefore} onChange={set("investedBefore") as (v: string) => void} placeholder="Select" disabled={disabled}>
-                    <SI value="yes">Yes</SI>
-                    <SI value="no">No</SI>
-                  </StyledSelect>
-                </div>
-
-                {/* ── Section 8 ── */}
-                <SectionHeading number="8">Investor Insight</SectionHeading>
-                <Divider />
-
-                <div className="space-y-2">
-                  <FieldLabel htmlFor="barriers">What has stopped you from investing in real estate so far?</FieldLabel>
-                  <Textarea
-                    id="barriers"
-                    value={form.barriers}
-                    onChange={(e) => set("barriers")(e.target.value)}
-                    placeholder="Share your thoughts…"
-                    rows={3}
-                    disabled={disabled}
-                    style={inputStyle}
-                    className={`${inputClass} resize-none`}
-                  />
-                </div>
-
-                {/* ── Section 9 ── */}
-                <SectionHeading number="9">Next Steps &amp; Access</SectionHeading>
-                <Divider />
-
-                <div className="space-y-2">
-                  <FieldLabel htmlFor="nextSteps">What would you like access to next?</FieldLabel>
-                  <StyledSelect id="nextSteps" value={form.nextSteps} onChange={set("nextSteps") as (v: string) => void} placeholder="Select" disabled={disabled}>
-                    <SI value="early-opportunities">Early Investment Opportunities</SI>
-                    <SI value="webinar">Private Investor Webinar</SI>
-                    <SI value="strategy-call">1-on-1 Strategy Call</SI>
-                    <SI value="all">All of the above</SI>
-                  </StyledSelect>
                 </div>
 
                 {/* ── Consent ── */}

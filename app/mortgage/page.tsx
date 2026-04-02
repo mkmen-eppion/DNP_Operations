@@ -794,22 +794,30 @@ export default function MortgagePage() {
                     </Label>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <Checkbox
-                      id="subscribeNewsletter"
-                      checked={form.subscribeNewsletter}
-                      onCheckedChange={(v) => set("subscribeNewsletter")(v)}
-                      disabled={status === "loading"}
-                      className="mt-0.5 border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
-                    />
-                    <Label
-                      htmlFor="subscribeNewsletter"
-                      className="text-sm leading-snug cursor-pointer"
-                      style={{ color: "#9aa3b8" }}
-                    >
-                      Subscribe me to the DPN-Global mailing list for property news, market updates,
-                      and exclusive opportunities.
-                    </Label>
+                  <div
+                    className="rounded-lg p-4 space-y-2"
+                    style={{ backgroundColor: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.2)" }}
+                  >
+                    <p className="text-sm font-semibold" style={{ color: "#c9a84c" }}>Join The Newsletter</p>
+                    <p className="text-xs" style={{ color: "#9aa3b8" }}>
+                      Stay up to date with DPN-Global property news, market insights, and exclusive opportunities.
+                    </p>
+                    <div className="flex items-center gap-2.5 pt-1">
+                      <Checkbox
+                        id="subscribeNewsletter"
+                        checked={form.subscribeNewsletter}
+                        onCheckedChange={(v) => set("subscribeNewsletter")(v)}
+                        disabled={status === "loading"}
+                        className="border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
+                      />
+                      <Label
+                        htmlFor="subscribeNewsletter"
+                        className="text-sm cursor-pointer"
+                        style={{ color: "#9aa3b8" }}
+                      >
+                        Yes, subscribe me to the DPN-Global newsletter
+                      </Label>
+                    </div>
                   </div>
                 </div>
 
