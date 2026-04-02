@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   if (!res.ok) {
     const err = await res.json();
     console.error("Airtable rental error:", err);
-    return NextResponse.json({ error: "Failed to save submission" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to save submission", detail: err, baseId: process.env.AIRTABLE_BASE_ID ?? "MISSING", tableId: process.env.AIRTABLE_RENTAL_TABLE_ID ?? "MISSING", hasToken: !!process.env.AIRTABLE_TOKEN }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });
