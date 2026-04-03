@@ -400,6 +400,23 @@ export default function RentalPage() {
                   </StyledSelect>
                 </div>
 
+                {/* ── Consent ── */}
+                <SectionHeading number="✓">Consent</SectionHeading>
+                <Divider />
+
+                <div className="flex items-start gap-3 pt-1">
+                  <Checkbox
+                    id="consent"
+                    checked={form.consent}
+                    onCheckedChange={(v) => set("consent")(v)}
+                    disabled={disabled}
+                    className="mt-0.5 border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
+                  />
+                  <Label htmlFor="consent" className="text-sm leading-snug cursor-pointer" style={{ color: "#9aa3b8" }}>
+                    I understand this form is for interest and pre-qualification purposes only. Submission does not guarantee participation. Investment opportunities are subject to availability, eligibility, and final program structure. <span className="text-red-400 font-bold">*</span>
+                  </Label>
+                </div>
+
                 {/* ── Join The Newsletter ── */}
                 <div
                   className="rounded-lg p-4 space-y-2"
@@ -421,23 +438,6 @@ export default function RentalPage() {
                       Yes, subscribe me to the DPN-Global newsletter
                     </Label>
                   </div>
-                </div>
-
-                {/* ── Consent ── */}
-                <SectionHeading number="✓">Consent</SectionHeading>
-                <Divider />
-
-                <div className="flex items-start gap-3 pt-1">
-                  <Checkbox
-                    id="consent"
-                    checked={form.consent}
-                    onCheckedChange={(v) => set("consent")(v)}
-                    disabled={disabled}
-                    className="mt-0.5 border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
-                  />
-                  <Label htmlFor="consent" className="text-sm leading-snug cursor-pointer" style={{ color: "#9aa3b8" }}>
-                    I understand this form is for interest and pre-qualification purposes only. Submission does not guarantee participation. Investment opportunities are subject to availability, eligibility, and final program structure. <span className="text-red-400 font-bold">*</span>
-                  </Label>
                 </div>
 
                 {/* ── Submit ── */}
