@@ -196,8 +196,7 @@ export default function RentalPage() {
             src="/logo.png"
             alt="Diaspora Property Network"
             width={200}
-            height={0}
-            style={{ height: "auto" }}
+            height={57}
             className="object-contain"
             priority
           />

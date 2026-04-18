@@ -71,7 +71,7 @@ function AuthGate({ onAuth }: { onAuth: (key: string) => void }) {
         style={{ backgroundColor: "#0d1b3e", borderColor: "rgba(201,168,76,0.3)" }}
       >
         <div className="flex justify-center">
-          <Image src="/logo.png" alt="DPN" width={160} height={0} style={{ height: "auto" }} />
+          <Image src="/logo.png" alt="DPN" width={160} height={46} />
         </div>
         <h1 className="text-center text-lg font-bold" style={{ color: "#c9a84c" }}>
           Admin Access
@@ -454,7 +454,7 @@ export default function AdminPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <Link href="/">
-            <Image src="/logo.png" alt="DPN" width={160} height={0} style={{ height: "auto" }} />
+            <Image src="/logo.png" alt="DPN" width={160} height={46} />
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-xs" style={{ color: "#9aa3b8" }}>Admin</span>

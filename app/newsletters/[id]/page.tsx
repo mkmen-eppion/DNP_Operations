@@ -348,7 +348,7 @@ export default function NewsletterArticlePage() {
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="flex justify-center">
           <Link href="/">
-            <Image src="/logo.png" alt="Diaspora Property Network" width={200} height={0} style={{ height: "auto" }} className="object-contain" priority />
+            <Image src="/logo.png" alt="Diaspora Property Network" width={200} height={57} className="object-contain" priority />
           </Link>
         </div>
 
