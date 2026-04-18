@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
     AIRTABLE_BASE_ID: process.env.AIRTABLE_BASE_ID ?? "",
     AIRTABLE_RENTAL_TABLE_ID: process.env.AIRTABLE_RENTAL_TABLE_ID ?? "",
     AIRTABLE_MORTGAGE_TABLE_ID: process.env.AIRTABLE_MORTGAGE_TABLE_ID ?? "",
+    AIRTABLE_BUYER_QUAL_TABLE_ID: process.env.AIRTABLE_BUYER_QUAL_TABLE_ID ?? "",
+    AIRTABLE_AGENT_VETTING_TABLE_ID: process.env.AIRTABLE_AGENT_VETTING_TABLE_ID ?? "",
   },
   async headers() {
     return [
