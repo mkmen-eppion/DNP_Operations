@@ -129,7 +129,7 @@ type FormData = {
   // Section 1: Agent / Representative Identity
   fullLegalName: string;
   tradingName: string;
-  entityType: string[];
+  entityType: string; // single choice
   entityTypeOther: string;
   countryOfRegistration: string;
   companyRegNumber: string;
@@ -210,7 +210,7 @@ type FormData = {
 const initial: FormData = {
   fullLegalName: "",
   tradingName: "",
-  entityType: [],
+  entityType: "",
   entityTypeOther: "",
   countryOfRegistration: "",
   companyRegNumber: "",
@@ -297,10 +297,38 @@ export default function AgentVettingPage() {
     form.ackCompliance2 &&
     form.ackCompliance3;
 
+  // Section 3 required when entity is a formal business (not sole-proprietor or influencer)
+  const requiresBusinessAddress = form.entityType !== "" &&
+    form.entityType !== "sole-proprietor" &&
+    form.entityType !== "influencer";
+
+  const section3Valid = !requiresBusinessAddress || (
+    form.businessAddress.trim() &&
+    form.city.trim() &&
+    form.stateProvince.trim() &&
+    form.postalCode.trim() &&
+    form.country.trim() &&
+    form.mainTelephone.trim() &&
+    form.generalBusinessEmail.trim()
+  );
+
   const canSubmit =
     form.fullLegalName.trim() &&
+    form.entityType !== "" &&
+    form.yearsInOperation !== "" &&
     form.primaryContactEmail.trim() &&
     form.primaryContactName.trim() &&
+    section3Valid &&
+    // Section 5 all required
+    form.hasLicense !== "" &&
+    form.isMemberAssociation !== "" &&
+    form.hasIndemnityInsurance !== "" &&
+    // Section 6
+    form.clientDemographic.length > 0 &&
+    form.previousGhanaTransaction !== "" &&
+    // Section 7
+    form.projectsInterested.length > 0 &&
+    form.heardAboutOpportunity.length > 0 &&
     allAcks &&
     allDeclarations &&
     status !== "loading";
@@ -419,8 +447,8 @@ export default function AgentVettingPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <FieldLabel htmlFor="entityType">Type of Entity:</FieldLabel>
-                  <CheckboxGroup
+                  <FieldLabel htmlFor="entityType" required>Type of Entity:</FieldLabel>
+                  <RadioGroup
                     name="entityType"
                     options={[
                       { label: "Sole Proprietor / Individual", value: "sole-proprietor" },
@@ -431,11 +459,11 @@ export default function AgentVettingPage() {
                       { label: "Influencer / Content Creator", value: "influencer" },
                       { label: "Other", value: "other" },
                     ]}
-                    values={form.entityType}
+                    value={form.entityType}
                     onChange={(v) => set("entityType", v)}
                     disabled={disabled}
                   />
-                  {form.entityType.includes("other") && (
+                  {form.entityType === "other" && (
                     <Input
                       value={form.entityTypeOther}
                       onChange={(e) => set("entityTypeOther", e.target.value)}
@@ -475,7 +503,7 @@ export default function AgentVettingPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <FieldLabel htmlFor="yearsInOperation">Years in Operation:</FieldLabel>
+                  <FieldLabel htmlFor="yearsInOperation" required>Years in Operation:</FieldLabel>
                   <RadioGroup
                     name="yearsInOperation"
                     options={[
@@ -606,8 +634,14 @@ export default function AgentVettingPage() {
                 <SectionHeading number="3">Business Address & Contact Information</SectionHeading>
                 <Divider />
 
+                {requiresBusinessAddress && (
+                  <p className="text-xs" style={{ color: "#9aa3b8" }}>
+                    Required for your selected entity type (except Alternative Telephone).
+                  </p>
+                )}
+
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="businessAddress">Primary Business Address</FieldLabel>
+                  <FieldLabel htmlFor="businessAddress" required={requiresBusinessAddress}>Primary Business Address</FieldLabel>
                   <Input
                     id="businessAddress"
                     value={form.businessAddress}
@@ -621,7 +655,7 @@ export default function AgentVettingPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="city">City</FieldLabel>
+                    <FieldLabel htmlFor="city" required={requiresBusinessAddress}>City</FieldLabel>
                     <Input
                       id="city"
                       value={form.city}
@@ -633,7 +667,7 @@ export default function AgentVettingPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="stateProvince">State / Province</FieldLabel>
+                    <FieldLabel htmlFor="stateProvince" required={requiresBusinessAddress}>State / Province</FieldLabel>
                     <Input
                       id="stateProvince"
                       value={form.stateProvince}
@@ -648,7 +682,7 @@ export default function AgentVettingPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="postalCode">Postal / Zip Code</FieldLabel>
+                    <FieldLabel htmlFor="postalCode" required={requiresBusinessAddress}>Postal / Zip Code</FieldLabel>
                     <Input
                       id="postalCode"
                       value={form.postalCode}
@@ -660,7 +694,7 @@ export default function AgentVettingPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="country">Country</FieldLabel>
+                    <FieldLabel htmlFor="country" required={requiresBusinessAddress}>Country</FieldLabel>
                     <Input
                       id="country"
                       value={form.country}
@@ -675,7 +709,7 @@ export default function AgentVettingPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="mainTelephone">Main Office Telephone</FieldLabel>
+                    <FieldLabel htmlFor="mainTelephone" required={requiresBusinessAddress}>Main Office Telephone</FieldLabel>
                     <Input
                       id="mainTelephone"
                       type="tel"
@@ -703,7 +737,7 @@ export default function AgentVettingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <FieldLabel htmlFor="generalBusinessEmail">General Business Email</FieldLabel>
+                  <FieldLabel htmlFor="generalBusinessEmail" required={requiresBusinessAddress}>General Business Email</FieldLabel>
                   <Input
                     id="generalBusinessEmail"
                     type="email"
@@ -774,7 +808,7 @@ export default function AgentVettingPage() {
                 <Divider />
 
                 <div className="space-y-3">
-                  <FieldLabel htmlFor="hasLicense">Do you hold a professional real estate license?</FieldLabel>
+                  <FieldLabel htmlFor="hasLicense" required>Do you hold a professional real estate license?</FieldLabel>
                   <RadioGroup
                     name="hasLicense"
                     options={[{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]}
@@ -813,7 +847,7 @@ export default function AgentVettingPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <FieldLabel htmlFor="isMemberAssociation">Are you a member of any professional association?</FieldLabel>
+                  <FieldLabel htmlFor="isMemberAssociation" required>Are you a member of any professional association?</FieldLabel>
                   <RadioGroup
                     name="isMemberAssociation"
                     options={[{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]}
@@ -834,7 +868,7 @@ export default function AgentVettingPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <FieldLabel htmlFor="hasIndemnityInsurance">Do you hold professional indemnity insurance?</FieldLabel>
+                  <FieldLabel htmlFor="hasIndemnityInsurance" required>Do you hold professional indemnity insurance?</FieldLabel>
                   <RadioGroup
                     name="hasIndemnityInsurance"
                     options={[{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]}
@@ -854,7 +888,7 @@ export default function AgentVettingPage() {
                 <Divider />
 
                 <div className="space-y-3">
-                  <FieldLabel htmlFor="clientDemographic">Primary client demographic (select all that apply):</FieldLabel>
+                  <FieldLabel htmlFor="clientDemographic" required>Primary client demographic (select at least one):</FieldLabel>
                   <CheckboxGroup
                     name="clientDemographic"
                     options={[
@@ -933,7 +967,7 @@ export default function AgentVettingPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <FieldLabel htmlFor="previousGhanaTransaction">Have you previously facilitated a real estate transaction in Ghana?</FieldLabel>
+                  <FieldLabel htmlFor="previousGhanaTransaction" required>Have you previously facilitated a real estate transaction in Ghana?</FieldLabel>
                   <RadioGroup
                     name="previousGhanaTransaction"
                     options={[{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]}
@@ -959,7 +993,7 @@ export default function AgentVettingPage() {
                 <Divider />
 
                 <div className="space-y-3">
-                  <FieldLabel htmlFor="projectsInterested">Which DPN Global project(s) are you interested in representing?</FieldLabel>
+                  <FieldLabel htmlFor="projectsInterested" required>Which DPN Global project(s) are you interested in representing?</FieldLabel>
                   <CheckboxGroup
                     name="projectsInterested"
                     options={[
@@ -973,7 +1007,7 @@ export default function AgentVettingPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <FieldLabel htmlFor="heardAboutOpportunity">How did you hear about this opportunity?</FieldLabel>
+                  <FieldLabel htmlFor="heardAboutOpportunity" required>How did you hear about this opportunity?</FieldLabel>
                   <CheckboxGroup
                     name="heardAboutOpportunity"
                     options={[

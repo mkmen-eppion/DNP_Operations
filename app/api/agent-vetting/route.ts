@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     // Section 1: Agent / Representative Identity
     "Full Legal Name": body.fullLegalName,
     "Trading Name": body.tradingName || "",
-    "Entity Type": Array.isArray(body.entityType) ? body.entityType.join(", ") : "",
+    "Entity Type": body.entityType || "",
     "Entity Type Other": body.entityTypeOther || "",
     "Country of Registration": body.countryOfRegistration || "",
     "Company Registration Number": body.companyRegNumber || "",
