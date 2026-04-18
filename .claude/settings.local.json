@@ -15,7 +15,8 @@
       "Bash(cmd /c \"taskkill /IM node.exe /F 2>&1\")",
       "Bash(cmd /c \"taskkill /PID 11592 /F\")",
       "Bash(cmd /c \"netstat -ano | findstr LISTENING | findstr :3000\")",
-      "WebFetch(domain:dpn-global.com)"
+      "WebFetch(domain:dpn-global.com)",
+      "Bash(npm run *)"
     ]
   }
 }

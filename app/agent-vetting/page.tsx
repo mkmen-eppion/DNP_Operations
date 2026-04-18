@@ -1055,7 +1055,7 @@ export default function AgentVettingPage() {
                 <SectionHeading number="8">Engagement Terms & Commission Acknowledgement</SectionHeading>
                 <Divider />
 
-                <p className="text-xs font-semibold uppercase tracking-wider" className="text-[#c9a84c]">Commission Structure</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#c9a84c]">Commission Structure</p>
                 <div className="space-y-4">
                   {[
                     { id: "ackCommission1" as keyof FormData, text: "I understand that commission is payable only upon successful receipt of the required deposit from the buyer and clearance of funds." },
