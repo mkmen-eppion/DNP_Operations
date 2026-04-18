@@ -17,9 +17,9 @@ import {
 import { CheckCircle2, Loader2 } from "lucide-react";
 
 const inputStyle = {
-  backgroundColor: "#0d1b3e",
-  borderColor: "rgba(201,168,76,0.3)",
-  color: "#f5f0e8",
+  backgroundColor: "#ffffff",
+  borderColor: "rgba(13,27,62,0.2)",
+  color: "#0d1b3e",
 };
 
 const inputClass =
@@ -42,14 +42,14 @@ function SectionHeading({ number, children }: { number: string; children: React.
 }
 
 function Divider() {
-  return <hr style={{ borderColor: "rgba(201,168,76,0.15)" }} />;
+  return <hr style={{ borderColor: "rgba(13,27,62,0.1)" }} />;
 }
 
 function FieldLabel({ htmlFor, required, children }: { htmlFor: string; required?: boolean; children: React.ReactNode }) {
   return (
-    <Label htmlFor={htmlFor} style={{ color: "#f5f0e8" }}>
+    <Label htmlFor={htmlFor} style={{ color: "#0d1b3e" }}>
       {children}{" "}
-      {required && <span className="text-red-400 font-bold">*</span>}
+      {required && <span className="text-red-500 font-bold">*</span>}
     </Label>
   );
 }
@@ -80,7 +80,7 @@ function RadioGroup({
             disabled={disabled}
             className="accent-[#c9a84c] size-4"
           />
-          <span className="text-sm" style={{ color: "#f5f0e8" }}>{opt.label}</span>
+          <span className="text-sm text-[#0d1b3e]">{opt.label}</span>
         </label>
       ))}
     </div>
@@ -118,7 +118,7 @@ function CheckboxGroup({
             disabled={disabled}
             className="border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
           />
-          <span className="text-sm" style={{ color: "#f5f0e8" }}>{opt.label}</span>
+          <span className="text-sm text-[#0d1b3e]">{opt.label}</span>
         </label>
       ))}
     </div>
@@ -265,10 +265,7 @@ export default function BuyerQualificationPage() {
   const disabled = status === "loading";
 
   return (
-    <main
-      className="min-h-screen flex items-center justify-center p-4 py-10"
-      style={{ background: "linear-gradient(135deg, #0a1530 0%, #0d1b3e 50%, #112050 100%)" }}
-    >
+    <main className="min-h-screen flex items-center justify-center p-4 py-10 bg-[#f8f7f4]">
       <div className="w-full max-w-2xl space-y-6">
         {/* Logo */}
         <div className="flex justify-center">
@@ -284,8 +281,8 @@ export default function BuyerQualificationPage() {
         </div>
 
         <Card
-          className="shadow-2xl border"
-          style={{ backgroundColor: "#112050", borderColor: "rgba(201,168,76,0.3)" }}
+          className="shadow-md border bg-white"
+          style={{ borderColor: "rgba(13,27,62,0.12)" }}
         >
           <div
             className="h-1 w-full rounded-t-lg"
@@ -293,13 +290,13 @@ export default function BuyerQualificationPage() {
           />
 
           <CardHeader className="pb-2 text-center pt-6">
-            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: "#c9a84c" }}>
+            <p className="text-xs font-semibold tracking-widest uppercase mb-1 text-[#c9a84c]">
               DPN Global
             </p>
-            <CardTitle className="text-2xl font-bold tracking-tight leading-tight" style={{ color: "#c9a84c" }}>
+            <CardTitle className="text-2xl font-bold tracking-tight leading-tight text-[#0d1b3e]">
               DPN Global Buyer & Investor Qualification Form
             </CardTitle>
-            <CardDescription className="text-sm leading-relaxed mt-3 text-left" style={{ color: "#9aa3b8" }}>
+            <CardDescription className="text-sm leading-relaxed mt-3 text-left text-[#5a6580]">
               This form is designed to qualify serious buyers, ensure compliance with anti-money laundering best
               practices, and accurately match investors with the most appropriate property opportunities within the
               DPN Global portfolio. Completion of this form allows our transaction team to conduct necessary due
@@ -308,19 +305,19 @@ export default function BuyerQualificationPage() {
               and financial profile. All information submitted will be treated with the strictest confidentiality
               and used solely for the purpose of facilitating your investment.
             </CardDescription>
-            <p className="text-xs mt-3 text-left" style={{ color: "#9aa3b8" }}>
-              Fields marked <span className="text-red-400 font-bold">*</span> are required.
+            <p className="text-xs mt-3 text-left text-[#5a6580]">
+              Fields marked <span className="text-red-500 font-bold">*</span> are required.
             </p>
           </CardHeader>
 
           <CardContent className="pb-8">
             {status === "success" ? (
               <div className="flex flex-col items-center gap-3 py-10 text-center">
-                <CheckCircle2 className="size-14" style={{ color: "#c9a84c" }} />
-                <p className="text-lg font-semibold" style={{ color: "#f5f0e8" }}>
+                <CheckCircle2 className="size-14 text-[#c9a84c]" />
+                <p className="text-lg font-semibold text-[#0d1b3e]">
                   Thank you for submitting your qualification form.
                 </p>
-                <p className="text-sm" style={{ color: "#9aa3b8" }}>
+                <p className="text-sm text-[#5a6580]">
                   Our team will review your details and be in touch with tailored property opportunities.
                   Welcome to DPN Global.
                 </p>
@@ -354,7 +351,7 @@ export default function BuyerQualificationPage() {
                       disabled={disabled}
                       className="border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
                     />
-                    <Label htmlFor="projectOpen" className="text-sm cursor-pointer" style={{ color: "#9aa3b8" }}>
+                    <Label htmlFor="projectOpen" className="text-sm cursor-pointer text-[#5a6580]">
                       Open to projects / not decided yet
                     </Label>
                   </div>
@@ -530,9 +527,9 @@ export default function BuyerQualificationPage() {
                 {form.purchasingAs === "entity" && (
                   <div
                     className="rounded-lg p-4 space-y-4"
-                    style={{ backgroundColor: "rgba(201,168,76,0.05)", border: "1px solid rgba(201,168,76,0.2)" }}
+                    style={{ backgroundColor: "rgba(201,168,76,0.05)", border: "1px solid rgba(201,168,76,0.25)" }}
                   >
-                    <p className="text-xs font-semibold tracking-wider uppercase" style={{ color: "#c9a84c" }}>
+                    <p className="text-xs font-semibold tracking-wider uppercase text-[#c9a84c]">
                       If purchasing through an entity:
                     </p>
                     <div className="space-y-2">
@@ -668,7 +665,7 @@ export default function BuyerQualificationPage() {
                 {/* ── Section 5: Property Preferences ── */}
                 <SectionHeading number="5">Property Preferences</SectionHeading>
                 <Divider />
-                <p className="text-xs" style={{ color: "#9aa3b8" }}>
+                <p className="text-xs text-[#5a6580]">
                   This section helps DPN match you with the most suitable opportunities across all projects.
                 </p>
 
@@ -798,8 +795,8 @@ export default function BuyerQualificationPage() {
                         disabled={disabled}
                         className="mt-0.5 border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
                       />
-                      <Label htmlFor={ack.id} className="text-sm leading-snug cursor-pointer" style={{ color: "#9aa3b8" }}>
-                        {ack.text} <span className="text-red-400 font-bold">*</span>
+                      <Label htmlFor={ack.id} className="text-sm leading-snug cursor-pointer text-[#5a6580]">
+                        {ack.text} <span className="text-red-500 font-bold">*</span>
                       </Label>
                     </div>
                   ))}
@@ -897,10 +894,10 @@ export default function BuyerQualificationPage() {
                     disabled={disabled}
                     className="mt-0.5 border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
                   />
-                  <Label htmlFor="dataConsent" className="text-sm leading-snug cursor-pointer" style={{ color: "#9aa3b8" }}>
+                  <Label htmlFor="dataConsent" className="text-sm leading-snug cursor-pointer text-[#5a6580]">
                     I consent to DPN Global storing my information and contacting me regarding property opportunities
                     that match my stated preferences. I understand I may withdraw consent at any time.{" "}
-                    <span className="text-red-400 font-bold">*</span>
+                    <span className="text-red-500 font-bold">*</span>
                   </Label>
                 </div>
 
@@ -908,10 +905,10 @@ export default function BuyerQualificationPage() {
                 <div className="pt-4 space-y-3">
                   <div
                     className="rounded-lg p-4 text-center space-y-1"
-                    style={{ backgroundColor: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)" }}
+                    style={{ backgroundColor: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.25)" }}
                   >
-                    <p className="text-sm font-semibold" style={{ color: "#c9a84c" }}>Ready to Submit</p>
-                    <p className="text-xs" style={{ color: "#9aa3b8" }}>
+                    <p className="text-sm font-semibold text-[#c9a84c]">Ready to Submit</p>
+                    <p className="text-xs text-[#5a6580]">
                       Our team will review your qualification and be in touch with matched opportunities.
                     </p>
                   </div>
@@ -942,7 +939,7 @@ export default function BuyerQualificationPage() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs pb-6" style={{ color: "#9aa3b8" }}>
+        <p className="text-center text-xs pb-6 text-[#5a6580]">
           Your information is kept strictly confidential and never sold.
         </p>
       </div>

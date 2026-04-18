@@ -344,10 +344,7 @@ export default function NewsletterArticlePage() {
   })();
 
   return (
-    <main
-      className="min-h-screen p-6 py-10"
-      style={{ background: "linear-gradient(135deg, #0a1530 0%, #0d1b3e 50%, #112050 100%)" }}
-    >
+    <main className="min-h-screen p-6 py-10 bg-[#f8f7f4]">
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="flex justify-center">
           <Link href="/">
@@ -355,17 +352,17 @@ export default function NewsletterArticlePage() {
           </Link>
         </div>
 
-        <Link href="/newsletters" className="inline-flex items-center gap-1.5 text-sm transition-colors hover:text-[#c9a84c]" style={{ color: "#9aa3b8" }}>
+        <Link href="/newsletters" className="inline-flex items-center gap-1.5 text-sm text-[#5a6580] transition-colors hover:text-[#c9a84c]">
           <ArrowLeft className="size-4" />
           Back to newsletters
         </Link>
 
         {loading && (
           <div className="flex justify-center py-16">
-            <Loader2 className="size-8 animate-spin" style={{ color: "#c9a84c" }} />
+            <Loader2 className="size-8 animate-spin text-[#c9a84c]" />
           </div>
         )}
-        {error && <p className="text-center text-sm py-16" style={{ color: "#9aa3b8" }}>{error}</p>}
+        {error && <p className="text-center text-sm py-16 text-[#5a6580]">{error}</p>}
 
         {!loading && newsletter && (
           <>
@@ -375,17 +372,17 @@ export default function NewsletterArticlePage() {
             )}
 
             <article
-              className="rounded-xl border shadow-2xl overflow-hidden"
-              style={{ backgroundColor: "#ffffff", borderColor: "rgba(201,168,76,0.3)" }}
+              className="rounded-xl border shadow-md overflow-hidden bg-white"
+              style={{ borderColor: "rgba(13,27,62,0.12)" }}
             >
               <div
                 className="px-8 py-6 border-b"
                 style={{ background: "linear-gradient(135deg, #0d1b3e, #112050)", borderColor: "rgba(201,168,76,0.2)" }}
               >
-                <h1 className="text-2xl font-bold tracking-tight leading-snug" style={{ color: "#c9a84c" }}>
+                <h1 className="text-2xl font-bold tracking-tight leading-snug text-[#c9a84c]">
                   {newsletter.wp_title}
                 </h1>
-                <p className="text-xs mt-2" style={{ color: "#9aa3b8" }}>
+                <p className="text-xs mt-2 text-[#9aa3b8]">
                   {new Date(newsletter.received_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
                 </p>
               </div>

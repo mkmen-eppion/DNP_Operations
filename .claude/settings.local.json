@@ -11,11 +11,11 @@
       "Bash(npm install:*)",
       "Bash(npm uninstall:*)",
       "Bash(grep -r \"admin\\\\|Admin\\\\|protected\\\\|Protected\\\\|auth\\\\|Auth\" '/c/Users/mkmen/Documents/GitHub/BUSINESS_REPOS/DNP/Newsletter Entry/app' --include=*.ts --include=*.tsx)",
-
       "Bash(cmd /c \"taskkill /PID 11592 /F & taskkill /IM node.exe /F\")",
       "Bash(cmd /c \"taskkill /IM node.exe /F 2>&1\")",
       "Bash(cmd /c \"taskkill /PID 11592 /F\")",
-      "Bash(cmd /c \"netstat -ano | findstr LISTENING | findstr :3000\")"
+      "Bash(cmd /c \"netstat -ano | findstr LISTENING | findstr :3000\")",
+      "WebFetch(domain:dpn-global.com)"
     ]
   }
 }

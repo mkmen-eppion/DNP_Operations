@@ -23,9 +23,9 @@ import {
 import { CheckCircle2, Loader2 } from "lucide-react";
 
 const inputStyle = {
-  backgroundColor: "#0d1b3e",
-  borderColor: "rgba(201,168,76,0.3)",
-  color: "#f5f0e8",
+  backgroundColor: "#ffffff",
+  borderColor: "rgba(13,27,62,0.2)",
+  color: "#0d1b3e",
 };
 
 const inputClass =
@@ -51,7 +51,7 @@ function SectionHeading({ number, children }: { number: string; children: React.
 }
 
 function Divider() {
-  return <hr style={{ borderColor: "rgba(201,168,76,0.15)" }} />;
+  return <hr style={{ borderColor: "rgba(13,27,62,0.1)" }} />;
 }
 
 function FieldLabel({
@@ -64,9 +64,9 @@ function FieldLabel({
   children: React.ReactNode;
 }) {
   return (
-    <Label htmlFor={htmlFor} style={{ color: "#f5f0e8" }}>
+    <Label htmlFor={htmlFor} style={{ color: "#0d1b3e" }}>
       {children}{" "}
-      {required && <span className="text-red-400 font-bold">*</span>}
+      {required && <span className="text-red-500 font-bold">*</span>}
     </Label>
   );
 }
@@ -90,12 +90,12 @@ function StyledSelect({
     <Select value={value} onValueChange={(v) => onChange(v ?? "")} disabled={disabled}>
       <SelectTrigger
         id={id}
-        style={{ ...inputStyle, color: value ? "#f5f0e8" : "#9aa3b8" }}
+        style={{ ...inputStyle, color: value ? "#0d1b3e" : "#9aa3b8" }}
         className="focus:ring-[#c9a84c]"
       >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent style={{ backgroundColor: "#112050", borderColor: "rgba(201,168,76,0.3)" }}>
+      <SelectContent style={{ backgroundColor: "#ffffff", borderColor: "rgba(13,27,62,0.12)" }}>
         {children}
       </SelectContent>
     </Select>
@@ -104,7 +104,7 @@ function StyledSelect({
 
 function SI({ value, children }: { value: string; children: React.ReactNode }) {
   return (
-    <SelectItem value={value} className="text-[#f5f0e8] focus:bg-[#1a2d5a] focus:text-[#c9a84c]">
+    <SelectItem value={value} className="text-[#0d1b3e] focus:bg-[#f0ede6] focus:text-[#0d1b3e]">
       {children}
     </SelectItem>
   );
@@ -188,10 +188,7 @@ export default function RentalPage() {
   const disabled = status === "loading";
 
   return (
-    <main
-      className="min-h-screen flex items-center justify-center p-4 py-10"
-      style={{ background: "linear-gradient(135deg, #0a1530 0%, #0d1b3e 50%, #112050 100%)" }}
-    >
+    <main className="min-h-screen flex items-center justify-center p-4 py-10 bg-[#f8f7f4]">
       <div className="w-full max-w-xl space-y-6">
         {/* Logo */}
         <div className="flex justify-center">
@@ -207,8 +204,8 @@ export default function RentalPage() {
         </div>
 
         <Card
-          className="shadow-2xl border"
-          style={{ backgroundColor: "#112050", borderColor: "rgba(201,168,76,0.3)" }}
+          className="shadow-md border bg-white"
+          style={{ borderColor: "rgba(13,27,62,0.12)" }}
         >
           <div
             className="h-1 w-full rounded-t-lg"
@@ -216,33 +213,33 @@ export default function RentalPage() {
           />
 
           <CardHeader className="pb-2 text-center pt-6">
-            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: "#c9a84c" }}>
+            <p className="text-xs font-semibold tracking-widest uppercase mb-1 text-[#c9a84c]">
               DPN-Global Presents
             </p>
-            <CardTitle className="text-2xl font-bold tracking-tight leading-tight" style={{ color: "#c9a84c" }}>
+            <CardTitle className="text-2xl font-bold tracking-tight leading-tight text-[#0d1b3e]">
               The Passive Rental Investment Program™
             </CardTitle>
-            <CardDescription className="text-sm leading-relaxed mt-2" style={{ color: "#9aa3b8" }}>
+            <CardDescription className="text-sm leading-relaxed mt-2 text-[#5a6580]">
               Earn from Short-Term Rentals — Without Owning the Property
             </CardDescription>
-            <p className="text-xs mt-3 leading-relaxed" style={{ color: "#9aa3b8" }}>
+            <p className="text-xs mt-3 leading-relaxed text-[#5a6580]">
               This program allows you to partner with DPN-Global to operate a short-term rental unit
               in Ghana 🇬🇭 for a 12 month period — earning income while gaining real market
               experience. Complete this form to receive early access to upcoming opportunities.
             </p>
-            <p className="text-xs mt-3" style={{ color: "#9aa3b8" }}>
-              Fields marked <span className="text-red-400 font-bold">*</span> are required.
+            <p className="text-xs mt-3 text-[#5a6580]">
+              Fields marked <span className="text-red-500 font-bold">*</span> are required.
             </p>
           </CardHeader>
 
           <CardContent className="pb-8">
             {status === "success" ? (
               <div className="flex flex-col items-center gap-3 py-10 text-center">
-                <CheckCircle2 className="size-14" style={{ color: "#c9a84c" }} />
-                <p className="text-lg font-semibold" style={{ color: "#f5f0e8" }}>
+                <CheckCircle2 className="size-14 text-[#c9a84c]" />
+                <p className="text-lg font-semibold text-[#0d1b3e]">
                   You&apos;re on the waitlist!
                 </p>
-                <p className="text-sm" style={{ color: "#9aa3b8" }}>
+                <p className="text-sm text-[#5a6580]">
                   Opportunities will be offered to qualified waitlist members first. Welcome to DPN-Global.
                 </p>
               </div>
@@ -412,18 +409,18 @@ export default function RentalPage() {
                     disabled={disabled}
                     className="mt-0.5 border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
                   />
-                  <Label htmlFor="consent" className="text-sm leading-snug cursor-pointer" style={{ color: "#9aa3b8" }}>
-                    I understand this form is for interest and pre-qualification purposes only. Submission does not guarantee participation. Investment opportunities are subject to availability, eligibility, and final program structure. <span className="text-red-400 font-bold">*</span>
+                  <Label htmlFor="consent" className="text-sm leading-snug cursor-pointer text-[#5a6580]">
+                    I understand this form is for interest and pre-qualification purposes only. Submission does not guarantee participation. Investment opportunities are subject to availability, eligibility, and final program structure. <span className="text-red-500 font-bold">*</span>
                   </Label>
                 </div>
 
                 {/* ── Join The Newsletter ── */}
                 <div
                   className="rounded-lg p-4 space-y-2"
-                  style={{ backgroundColor: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.2)" }}
+                  style={{ backgroundColor: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.25)" }}
                 >
-                  <p className="text-sm font-semibold" style={{ color: "#c9a84c" }}>Join The Newsletter</p>
-                  <p className="text-xs" style={{ color: "#9aa3b8" }}>
+                  <p className="text-sm font-semibold text-[#c9a84c]">Join The Newsletter</p>
+                  <p className="text-xs text-[#5a6580]">
                     Stay up to date with DPN-Global property news, market insights, and exclusive opportunities.
                   </p>
                   <div className="flex items-center gap-2.5 pt-1">
@@ -434,7 +431,7 @@ export default function RentalPage() {
                       disabled={disabled}
                       className="border-[#c9a84c] data-[state=checked]:bg-[#c9a84c] data-[state=checked]:border-[#c9a84c]"
                     />
-                    <Label htmlFor="subscribeNewsletter" className="text-sm cursor-pointer" style={{ color: "#9aa3b8" }}>
+                    <Label htmlFor="subscribeNewsletter" className="text-sm cursor-pointer text-[#5a6580]">
                       Yes, subscribe me to the DPN-Global newsletter
                     </Label>
                   </div>
@@ -444,10 +441,10 @@ export default function RentalPage() {
                 <div className="pt-4 space-y-3">
                   <div
                     className="rounded-lg p-4 text-center space-y-1"
-                    style={{ backgroundColor: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)" }}
+                    style={{ backgroundColor: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.25)" }}
                   >
-                    <p className="text-sm font-semibold" style={{ color: "#c9a84c" }}>Secure Your Position</p>
-                    <p className="text-xs" style={{ color: "#9aa3b8" }}>
+                    <p className="text-sm font-semibold text-[#c9a84c]">Secure Your Position</p>
+                    <p className="text-xs text-[#5a6580]">
                       Opportunities will be offered to qualified waitlist members first.
                     </p>
                   </div>
@@ -478,7 +475,7 @@ export default function RentalPage() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs pb-6" style={{ color: "#9aa3b8" }}>
+        <p className="text-center text-xs pb-6 text-[#5a6580]">
           Your information is kept private and never sold.
         </p>
       </div>

@@ -24,9 +24,9 @@ import {
 import { CheckCircle2, Loader2 } from "lucide-react";
 
 const inputStyle = {
-  backgroundColor: "#0d1b3e",
-  borderColor: "rgba(201,168,76,0.3)",
-  color: "#f5f0e8",
+  backgroundColor: "#ffffff",
+  borderColor: "rgba(13,27,62,0.2)",
+  color: "#0d1b3e",
 };
 
 const inputClass =
@@ -44,7 +44,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 }
 
 function Divider() {
-  return <hr style={{ borderColor: "rgba(201,168,76,0.15)" }} />;
+  return <hr style={{ borderColor: "rgba(13,27,62,0.1)" }} />;
 }
 
 function FieldLabel({
@@ -57,10 +57,10 @@ function FieldLabel({
   children: React.ReactNode;
 }) {
   return (
-    <Label htmlFor={htmlFor} style={{ color: "#f5f0e8" }}>
+    <Label htmlFor={htmlFor} style={{ color: "#0d1b3e" }}>
       {children}{" "}
       {required && (
-        <span className="text-red-400 font-bold" aria-hidden="true">*</span>
+        <span className="text-red-500 font-bold" aria-hidden="true">*</span>
       )}
     </Label>
   );
@@ -85,12 +85,12 @@ function StyledSelect({
     <Select value={value} onValueChange={(v) => onChange(v ?? "")} disabled={disabled}>
       <SelectTrigger
         id={id}
-        style={{ ...inputStyle, color: value ? "#f5f0e8" : "#9aa3b8" }}
+        style={{ ...inputStyle, color: value ? "#0d1b3e" : "#9aa3b8" }}
         className="focus:ring-[#c9a84c]"
       >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent style={{ backgroundColor: "#112050", borderColor: "rgba(201,168,76,0.3)" }}>
+      <SelectContent style={{ backgroundColor: "#ffffff", borderColor: "rgba(13,27,62,0.12)" }}>
         {children}
       </SelectContent>
     </Select>
@@ -99,7 +99,7 @@ function StyledSelect({
 
 function SI({ value, children }: { value: string; children: React.ReactNode }) {
   return (
-    <SelectItem value={value} className="text-[#f5f0e8] focus:bg-[#1a2d5a] focus:text-[#c9a84c]">
+    <SelectItem value={value} className="text-[#0d1b3e] focus:bg-[#f0ede6] focus:text-[#0d1b3e]">
       {children}
     </SelectItem>
   );
@@ -242,10 +242,7 @@ export default function MortgagePage() {
   }
 
   return (
-    <main
-      className="min-h-screen flex items-center justify-center p-4 py-10"
-      style={{ background: "linear-gradient(135deg, #0a1530 0%, #0d1b3e 50%, #112050 100%)" }}
-    >
+    <main className="min-h-screen flex items-center justify-center p-4 py-10 bg-[#f8f7f4]">
       <div className="w-full max-w-xl space-y-6">
         {/* Logo */}
         <div className="flex justify-center">
@@ -261,8 +258,8 @@ export default function MortgagePage() {
         </div>
 
         <Card
-          className="shadow-2xl border"
-          style={{ backgroundColor: "#112050", borderColor: "rgba(201,168,76,0.3)" }}
+          className="shadow-md border bg-white"
+          style={{ borderColor: "rgba(13,27,62,0.12)" }}
         >
           <div
             className="h-1 w-full rounded-t-lg"
@@ -270,26 +267,26 @@ export default function MortgagePage() {
           />
 
           <CardHeader className="pb-2 text-center pt-6">
-            <CardTitle className="text-2xl font-bold tracking-tight" style={{ color: "#c9a84c" }}>
+            <CardTitle className="text-2xl font-bold tracking-tight text-[#0d1b3e]">
               DPN-Global Mortgage Program
             </CardTitle>
-            <CardDescription className="text-sm leading-relaxed" style={{ color: "#9aa3b8" }}>
+            <CardDescription className="text-sm leading-relaxed text-[#5a6580]">
               Be among the first to access a new international mortgage solution designed to help
               the African Diaspora finance property in Ghana.
             </CardDescription>
-            <p className="text-xs mt-2" style={{ color: "#9aa3b8" }}>
-              Fields marked <span className="text-red-400 font-bold">*</span> are required.
+            <p className="text-xs mt-2 text-[#5a6580]">
+              Fields marked <span className="text-red-500 font-bold">*</span> are required.
             </p>
           </CardHeader>
 
           <CardContent className="pb-8">
             {status === "success" ? (
               <div className="flex flex-col items-center gap-3 py-10 text-center">
-                <CheckCircle2 className="size-14" style={{ color: "#c9a84c" }} />
-                <p className="text-lg font-semibold" style={{ color: "#f5f0e8" }}>
+                <CheckCircle2 className="size-14 text-[#c9a84c]" />
+                <p className="text-lg font-semibold text-[#0d1b3e]">
                   You&apos;re on the list!
                 </p>
-                <p className="text-sm" style={{ color: "#9aa3b8" }}>
+                <p className="text-sm text-[#5a6580]">
                   We&apos;ll reach out as soon as early access opens. Welcome to DPN-Global.
                 </p>
               </div>
@@ -776,11 +773,10 @@ export default function MortgagePage() {
                     />
                     <Label
                       htmlFor="consentWaitlist"
-                      className="text-sm leading-snug cursor-pointer"
-                      style={{ color: "#9aa3b8" }}
+                      className="text-sm leading-snug cursor-pointer text-[#5a6580]"
                     >
                       I understand this is a waiting list for a mortgage product currently in
-                      development. <span className="text-red-400 font-bold">*</span>
+                      development. <span className="text-red-500 font-bold">*</span>
                     </Label>
                   </div>
 
@@ -794,20 +790,19 @@ export default function MortgagePage() {
                     />
                     <Label
                       htmlFor="consentContact"
-                      className="text-sm leading-snug cursor-pointer"
-                      style={{ color: "#9aa3b8" }}
+                      className="text-sm leading-snug cursor-pointer text-[#5a6580]"
                     >
                       I agree to be contacted by DPN-Global regarding updates and opportunities
-                      related to the mortgage program. <span className="text-red-400 font-bold">*</span>
+                      related to the mortgage program. <span className="text-red-500 font-bold">*</span>
                     </Label>
                   </div>
 
                   <div
                     className="rounded-lg p-4 space-y-2"
-                    style={{ backgroundColor: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.2)" }}
+                    style={{ backgroundColor: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.25)" }}
                   >
-                    <p className="text-sm font-semibold" style={{ color: "#c9a84c" }}>Join The Newsletter</p>
-                    <p className="text-xs" style={{ color: "#9aa3b8" }}>
+                    <p className="text-sm font-semibold text-[#c9a84c]">Join The Newsletter</p>
+                    <p className="text-xs text-[#5a6580]">
                       Stay up to date with DPN-Global property news, market insights, and exclusive opportunities.
                     </p>
                     <div className="flex items-center gap-2.5 pt-1">
@@ -820,8 +815,7 @@ export default function MortgagePage() {
                       />
                       <Label
                         htmlFor="subscribeNewsletter"
-                        className="text-sm cursor-pointer"
-                        style={{ color: "#9aa3b8" }}
+                        className="text-sm cursor-pointer text-[#5a6580]"
                       >
                         Yes, subscribe me to the DPN-Global newsletter
                       </Label>
@@ -831,7 +825,7 @@ export default function MortgagePage() {
 
                 {/* ── Submit ── */}
                 <div className="pt-2 space-y-3">
-                  <p className="text-center text-xs" style={{ color: "#9aa3b8" }}>
+                  <p className="text-center text-xs text-[#5a6580]">
                     No commitment. No credit check. Early access only.
                   </p>
                   <Button
@@ -861,7 +855,7 @@ export default function MortgagePage() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs pb-6" style={{ color: "#9aa3b8" }}>
+        <p className="text-center text-xs pb-6 text-[#5a6580]">
           Your information is kept private and never sold.
         </p>
       </div>

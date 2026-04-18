@@ -47,24 +47,24 @@
 }
 
 :root {
-    /* DNP Brand: navy #0d1b3e, gold #c9a84c */
-    --background: #0d1b3e;
-    --foreground: #f5f0e8;
-    --card: #112050;
-    --card-foreground: #f5f0e8;
-    --popover: #112050;
-    --popover-foreground: #f5f0e8;
+    /* DNP Brand: navy #0d1b3e, gold #c9a84c, light bg #f8f7f4 */
+    --background: #f8f7f4;
+    --foreground: #0d1b3e;
+    --card: #ffffff;
+    --card-foreground: #0d1b3e;
+    --popover: #ffffff;
+    --popover-foreground: #0d1b3e;
     --primary: #c9a84c;
     --primary-foreground: #0d1b3e;
-    --secondary: #1a2d5a;
-    --secondary-foreground: #c9a84c;
-    --muted: #1a2d5a;
-    --muted-foreground: #9aa3b8;
+    --secondary: #f0ede6;
+    --secondary-foreground: #0d1b3e;
+    --muted: #f0ede6;
+    --muted-foreground: #5a6580;
     --accent: #c9a84c;
     --accent-foreground: #0d1b3e;
     --destructive: oklch(0.577 0.245 27.325);
-    --border: rgba(201, 168, 76, 0.2);
-    --input: rgba(201, 168, 76, 0.15);
+    --border: rgba(13, 27, 62, 0.12);
+    --input: rgba(13, 27, 62, 0.08);
     --ring: #c9a84c;
     --chart-1: #c9a84c;
     --chart-2: #e6c97a;
@@ -72,7 +72,7 @@
     --chart-4: #1a2d5a;
     --chart-5: #0d1b3e;
     --radius: 0.625rem;
-    --sidebar: #112050;
+    --sidebar: #0d1b3e;
     --sidebar-foreground: #f5f0e8;
     --sidebar-primary: #c9a84c;
     --sidebar-primary-foreground: #0d1b3e;
