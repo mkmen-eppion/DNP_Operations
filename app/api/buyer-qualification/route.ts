@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const AMENITY_MAP: Record<string, string> = {
+  pool: "Pool",
+  gym: "Gym",
+  parking: "Parking",
+  concierge: "Concierge",
+  garden: "Garden",
+  other: "Other",
+  // unmapped form options fall through — silently dropped
+};
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
@@ -37,20 +47,25 @@ export async function POST(req: NextRequest) {
     "Property Type": Array.isArray(body.propertyType) ? body.propertyType.join(", ") : "",
     "Preferred Locations": Array.isArray(body.preferredLocations) ? body.preferredLocations.join(", ") : "",
     "DPN Recommendation Notes": body.dpnRecommendation || "",
-    "Min Bedrooms": body.minBedrooms || "",
-    "Amenities": Array.isArray(body.amenities) ? body.amenities.join(", ") : "",
+    // number field — "studio" and "4+" are not numeric, store as null
+    "Min Bedrooms": body.minBedrooms && /^\d+$/.test(body.minBedrooms) ? Number(body.minBedrooms) : null,
+    // multipleSelects — map form values to exact Airtable option names, drop unmapped
+    "Amenities": Array.isArray(body.amenities)
+      ? body.amenities.flatMap((v: string) => (AMENITY_MAP[v] ? [AMENITY_MAP[v]] : []))
+      : [],
     "Amenities Other": body.amenitiesOther || "",
 
     // Section 7: Additional Information
-    "Has DPN Rep": body.hasDpnRep || "",
+    // checkbox fields — form sends "yes"/"no" strings
+    "Has DPN Rep": body.hasDpnRep === "yes",
     "DPN Rep Name": body.dpnRepName || "",
-    "Has Agent": body.hasAgent || "",
+    "Has Agent": body.hasAgent === "yes",
     "Agent Name": body.agentName || "",
     "Additional Comments": body.additionalComments || "",
-    "Wants Consultation": body.wantsConsultation || "",
+    "Wants Consultation": body.wantsConsultation === "yes",
 
-    // Meta
-    "Submitted At": new Date().toISOString(),
+    // Meta — date field (YYYY-MM-DD only)
+    "Submitted At": new Date().toISOString().split("T")[0],
   };
 
   const res = await fetch(

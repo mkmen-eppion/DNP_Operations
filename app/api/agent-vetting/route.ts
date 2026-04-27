@@ -1,5 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Years in Operation — form sends range strings, Airtable expects number.
+// Store the lower bound of the range.
+const YEARS_MAP: Record<string, number> = {
+  "less-than-1": 0,
+  "1-3": 1,
+  "3-5": 3,
+  "5-10": 5,
+  "10+": 10,
+};
+
+// Engagement Channels — map form values to exact Airtable multipleSelects option names.
+const CHANNEL_MAP: Record<string, string> = {
+  "in-person": "Direct Outreach",
+  "whatsapp": "Direct Outreach",
+  "email-newsletter": "Direct Outreach",
+  "social-media": "Social Media",
+  "events": "Events",
+  "community-church": "Direct Outreach",
+  "professional-networks": "Referral",
+  "legal-advisory": "Direct Outreach",
+  "influencer": "Digital Marketing",
+  "other": "Other",
+};
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
@@ -11,7 +35,8 @@ export async function POST(req: NextRequest) {
     "Entity Type Other": body.entityTypeOther || "",
     "Country of Registration": body.countryOfRegistration || "",
     "Company Registration Number": body.companyRegNumber || "",
-    "Years in Operation": body.yearsInOperation || "",
+    // number field — map range string to lower bound number
+    "Years in Operation": YEARS_MAP[body.yearsInOperation] ?? null,
 
     // Section 2: Key Point of Contact
     "Primary Contact Name": body.primaryContactName,
@@ -44,20 +69,31 @@ export async function POST(req: NextRequest) {
     "Other Platform": body.otherPlatform || "",
 
     // Section 5: Professional Credentials & Licensing
-    "Has Real Estate License": body.hasLicense || "",
+    // checkbox fields — form sends "yes"/"no" strings
+    "Has Real Estate License": body.hasLicense === "yes",
     "License Issuing Body & Number": body.licenseIssuingBody || "",
     "License Country / State": body.licenseCountryState || "",
-    "Member of Professional Association": body.isMemberAssociation || "",
+    "Member of Professional Association": body.isMemberAssociation === "yes",
     "Association Names": body.associationNames || "",
-    "Has Indemnity Insurance": body.hasIndemnityInsurance || "",
+    "Has Indemnity Insurance": body.hasIndemnityInsurance === "yes",
 
     // Section 6: Network & Client Reach
-    "Client Demographic": Array.isArray(body.clientDemographic) ? body.clientDemographic.join(", ") : "",
+    // singleSelect — form sends array but Airtable only accepts one value; take first
+    "Client Demographic": Array.isArray(body.clientDemographic) && body.clientDemographic.length > 0
+      ? body.clientDemographic[0]
+      : (body.clientDemographic || ""),
     "Client Demographic Other": body.clientDemographicOther || "",
-    "Estimated Client Count": body.estimatedClientCount || "",
-    "Engagement Channels": Array.isArray(body.engagementChannels) ? body.engagementChannels.join(", ") : "",
+    // number field — form is free-text, parse first numeric token
+    "Estimated Client Count": body.estimatedClientCount
+      ? parseInt(String(body.estimatedClientCount).replace(/[^0-9]/g, ""), 10) || null
+      : null,
+    // multipleSelects — map form values to exact Airtable option names, dedupe
+    "Engagement Channels": Array.isArray(body.engagementChannels)
+      ? [...new Set(body.engagementChannels.flatMap((v: string) => (CHANNEL_MAP[v] ? [CHANNEL_MAP[v]] : [])))]
+      : [],
     "Engagement Channels Other": body.engagementChannelsOther || "",
-    "Previous Ghana Transaction": body.previousGhanaTransaction || "",
+    // checkbox field
+    "Previous Ghana Transaction": body.previousGhanaTransaction === "yes",
     "Ghana Transaction Details": body.ghanaTransactionDetails || "",
 
     // Section 7: DPN Global Project Interest
@@ -67,8 +103,8 @@ export async function POST(req: NextRequest) {
     "Heard Partner Name": body.heardPartnerName || "",
     "Heard Other": body.heardOther || "",
 
-    // Meta
-    "Submitted At": new Date().toISOString(),
+    // Meta — date field (YYYY-MM-DD only)
+    "Submitted At": new Date().toISOString().split("T")[0],
   };
 
   const res = await fetch(
