@@ -10,6 +10,50 @@ const YEARS_MAP: Record<string, number> = {
   "10+": 10,
 };
 
+// Entity Type — form sends slugs, Airtable singleSelect options are
+// ['Company', 'Individual', 'Partnership', 'Other']. Map to the closest option.
+const ENTITY_TYPE_MAP: Record<string, string> = {
+  "sole-proprietor": "Individual",
+  "llc": "Company",
+  "partnership": "Partnership",
+  "real-estate-agency": "Company",
+  "law-firm": "Company",
+  "influencer": "Individual",
+  "other": "Other",
+};
+
+// Client Demographic — form is a multi-select checkbox group, but Airtable is a
+// singleSelect with options ['Corporate', 'Individual', 'Institutional', 'Other'].
+// Map each slug to a bucket; the full selection is preserved in the
+// "Client Demographic Other" text field so no detail is lost.
+const CLIENT_DEMOGRAPHIC_MAP: Record<string, string> = {
+  "diaspora-uk": "Individual",
+  "diaspora-usa": "Individual",
+  "diaspora-europe": "Individual",
+  "diaspora-canada": "Individual",
+  "african-american-caribbean": "Individual",
+  "international-investors": "Individual",
+  "domestic-ghana": "Individual",
+  "corporate": "Corporate",
+  "hnwi": "Individual",
+  "other": "Other",
+};
+
+// Human-readable labels for Client Demographic slugs, used to record the full
+// selection in the "Client Demographic Other" text field.
+const CLIENT_DEMOGRAPHIC_LABELS: Record<string, string> = {
+  "diaspora-uk": "Ghanaian Diaspora (UK)",
+  "diaspora-usa": "Ghanaian Diaspora (USA)",
+  "diaspora-europe": "Ghanaian Diaspora (Europe)",
+  "diaspora-canada": "Ghanaian Diaspora (Canada)",
+  "african-american-caribbean": "African-American / Caribbean Diaspora",
+  "international-investors": "Non-African International Investors",
+  "domestic-ghana": "Domestic Ghanaian Buyers",
+  "corporate": "Corporate / Institutional Clients",
+  "hnwi": "High-Net-Worth Individuals (HNWIs)",
+  "other": "Other",
+};
+
 // Engagement Channels — map form values to exact Airtable multipleSelects option names.
 const CHANNEL_MAP: Record<string, string> = {
   "in-person": "Direct Outreach",
@@ -31,7 +75,7 @@ export async function POST(req: NextRequest) {
     // Section 1: Agent / Representative Identity
     "Full Legal Name": body.fullLegalName,
     "Trading Name": body.tradingName || "",
-    "Entity Type": body.entityType || "",
+    "Entity Type": ENTITY_TYPE_MAP[body.entityType] ?? "",
     "Entity Type Other": body.entityTypeOther || "",
     "Country of Registration": body.countryOfRegistration || "",
     "Company Registration Number": body.companyRegNumber || "",
@@ -78,11 +122,19 @@ export async function POST(req: NextRequest) {
     "Has Indemnity Insurance": body.hasIndemnityInsurance === "yes",
 
     // Section 6: Network & Client Reach
-    // singleSelect — form sends array but Airtable only accepts one value; take first
+    // singleSelect — form sends array of slugs but Airtable only accepts one
+    // mapped option; bucket the first selection.
     "Client Demographic": Array.isArray(body.clientDemographic) && body.clientDemographic.length > 0
-      ? body.clientDemographic[0]
-      : (body.clientDemographic || ""),
-    "Client Demographic Other": body.clientDemographicOther || "",
+      ? (CLIENT_DEMOGRAPHIC_MAP[body.clientDemographic[0]] ?? "Other")
+      : "",
+    // Preserve the full multi-select detail (and any free-text) so nothing is lost
+    // when collapsing into the singleSelect above.
+    "Client Demographic Other": [
+      ...(Array.isArray(body.clientDemographic)
+        ? body.clientDemographic.map((slug: string) => CLIENT_DEMOGRAPHIC_LABELS[slug] ?? slug)
+        : []),
+      ...(body.clientDemographicOther ? [body.clientDemographicOther] : []),
+    ].join(", "),
     // number field — form is free-text, parse first numeric token
     "Estimated Client Count": body.estimatedClientCount
       ? parseInt(String(body.estimatedClientCount).replace(/[^0-9]/g, ""), 10) || null
